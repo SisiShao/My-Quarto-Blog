@@ -7,6 +7,20 @@
     "text": "About this blog"
   },
   {
+    "objectID": "posts/hw0/index.html",
+    "href": "posts/hw0/index.html",
+    "title": "Palmer Penguins Visualization",
+    "section": "",
+    "text": "Below is a Python-generated plot visualizing the Palmer Penguins dataset.\n\nimport pandas as pd\nimport matplotlib.pyplot as plt\n\n# Load the dataset\nurl = \"https://raw.githubusercontent.com/pic16b-ucla/24W/main/datasets/palmer_penguins.csv\"\npenguins = pd.read_csv(url)\n\n# Drop rows with missing values in relevant columns\npenguins = penguins.dropna(subset=['Species', 'Flipper Length (mm)', 'Body Mass (g)'])\n\n# Scatter plot of flipper length vs. body mass\nplt.figure(figsize=(8, 6))\nfor species, group in penguins.groupby('Species'):\n    plt.scatter(group['Flipper Length (mm)'], group['Body Mass (g)'], label=species, alpha=0.7)\n\nplt.title(\"Flipper Length vs Body Mass by Species\")\nplt.xlabel(\"Flipper Length (mm)\")\nplt.ylabel(\"Body Mass (g)\")\nplt.legend(title=\"Species\")\nplt.grid(True)\nplt.show()"
+  },
+  {
+    "objectID": "posts/hw0/index.html#visualization-of-the-palmer-penguins-dataset",
+    "href": "posts/hw0/index.html#visualization-of-the-palmer-penguins-dataset",
+    "title": "Palmer Penguins Visualization",
+    "section": "",
+    "text": "Below is a Python-generated plot visualizing the Palmer Penguins dataset.\n\nimport pandas as pd\nimport matplotlib.pyplot as plt\n\n# Load the dataset\nurl = \"https://raw.githubusercontent.com/pic16b-ucla/24W/main/datasets/palmer_penguins.csv\"\npenguins = pd.read_csv(url)\n\n# Drop rows with missing values in relevant columns\npenguins = penguins.dropna(subset=['Species', 'Flipper Length (mm)', 'Body Mass (g)'])\n\n# Scatter plot of flipper length vs. body mass\nplt.figure(figsize=(8, 6))\nfor species, group in penguins.groupby('Species'):\n    plt.scatter(group['Flipper Length (mm)'], group['Body Mass (g)'], label=species, alpha=0.7)\n\nplt.title(\"Flipper Length vs Body Mass by Species\")\nplt.xlabel(\"Flipper Length (mm)\")\nplt.ylabel(\"Body Mass (g)\")\nplt.legend(title=\"Species\")\nplt.grid(True)\nplt.show()"
+  },
+  {
     "objectID": "posts/welcome/index.html",
     "href": "posts/welcome/index.html",
     "title": "Welcome to Sisi’s Blog",
@@ -14,17 +28,10 @@
     "text": "Welcome to my blog!\n\nMy most beloved Winnie forever."
   },
   {
-    "objectID": "posts/post-with-code/index.html",
-    "href": "posts/post-with-code/index.html",
-    "title": "Post With Code",
-    "section": "",
-    "text": "This is a post with executable code."
-  },
-  {
     "objectID": "index.html",
     "href": "index.html",
     "title": "myblog",
     "section": "",
-    "text": "Post With Code\n\n\n\n\n\n\nnews\n\n\ncode\n\n\nanalysis\n\n\n\n\n\n\n\n\n\nJan 22, 2025\n\n\nHarlow Malloc\n\n\n\n\n\n\n\n\n\n\n\n\nWelcome to Sisi’s Blog\n\n\n\n\n\n\nnews\n\n\n\n\n\n\n\n\n\nJan 19, 2025\n\n\nSisi Shao\n\n\n\n\n\n\nNo matching items"
+    "text": "Palmer Penguins Visualization\n\n\n\n\n\n\ndata-visualization\n\n\n\n\n\n\n\n\n\nJan 22, 2025\n\n\nSisi Shao\n\n\n\n\n\n\n\n\n\n\n\n\nWelcome to Sisi’s Blog\n\n\n\n\n\n\nnews\n\n\n\n\n\n\n\n\n\nJan 19, 2025\n\n\nSisi Shao\n\n\n\n\n\n\nNo matching items"
   }
 ]
