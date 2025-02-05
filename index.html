@@ -6,8 +6,10 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
+<meta name="author" content="Sisi Shao">
+<meta name="dcterms.date" content="2025-02-03">
 
-<title>myblog</title>
+<title>Exploring NOAA Climate Data: SQL Queries, Trend Analysis, and Advanced Visualizations with Plotly</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -20,18 +22,49 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
-<script src="site_libs/quarto-nav/quarto-nav.js"></script>
-<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script><script src="site_libs/quarto-nav/quarto-nav.js"></script>
 <script src="site_libs/clipboard/clipboard.min.js"></script>
 <script src="site_libs/quarto-search/autocomplete.umd.js"></script>
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
-<script src="site_libs/quarto-listing/list.min.js"></script>
-<script src="site_libs/quarto-listing/quarto-listing.js"></script>
 <script src="site_libs/quarto-html/quarto.js"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
 <script src="site_libs/quarto-html/tippy.umd.min.js"></script>
@@ -40,13 +73,13 @@ ul.task-list li input[type="checkbox"] {
 <link href="site_libs/quarto-html/quarto-syntax-highlighting-549806ee2085284f45b00abea8c6df48.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-6bd9cfa162949bde0a231f530c97869d.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-79108a0fc1995748cbd19a5b0e3e3e7c.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
-  "location": "navbar",
+  "location": "sidebar",
   "copy-button": false,
   "collapse-after": 3,
-  "panel-placement": "end",
-  "type": "overlay",
+  "panel-placement": "start",
+  "type": "textbox",
   "limit": 50,
   "keyboard-shortcut": [
     "f",
@@ -68,214 +101,717 @@ ul.task-list li input[type="checkbox"] {
     "search-label": "Search"
   }
 }</script>
-<script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
 
-  window.document.addEventListener("DOMContentLoaded", function (_event) {
-    const listingTargetEl = window.document.querySelector('#listing-listing .list');
-    if (!listingTargetEl) {
-      // No listing discovered, do not attach.
-      return; 
-    }
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
 
-    const options = {
-      valueNames: ['listing-date','listing-title','listing-author','listing-image','listing-description','listing-categories',{ data: ['index'] },{ data: ['categories'] },{ data: ['listing-date-sort'] },{ data: ['listing-file-modified-sort'] }],
-      
-      searchColumns: ["listing-date","listing-title","listing-author","listing-image","listing-description","listing-categories"],
-    };
 
-    window['quarto-listings'] = window['quarto-listings'] || {};
-    window['quarto-listings']['listing-listing'] = new List('listing-listing', options);
-
-    if (window['quarto-listing-loaded']) {
-      window['quarto-listing-loaded']();
-    }
-  });
-
-  window.addEventListener('hashchange',() => {
-    if (window['quarto-listing-loaded']) {
-      window['quarto-listing-loaded']();
-    }
-  })
-  </script>
-
-  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
-  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
-
-<script type="text/javascript">
-const typesetMath = (el) => {
-  if (window.MathJax) {
-    // MathJax Typeset
-    window.MathJax.typeset([el]);
-  } else if (window.katex) {
-    // KaTeX Render
-    var mathElements = el.getElementsByClassName("math");
-    var macros = [];
-    for (var i = 0; i < mathElements.length; i++) {
-      var texText = mathElements[i].firstChild;
-      if (mathElements[i].tagName == "SPAN") {
-        window.katex.render(texText.data, mathElements[i], {
-          displayMode: mathElements[i].classList.contains('display'),
-          throwOnError: false,
-          macros: macros,
-          fleqn: false
-        });
-      }
-    }
-  }
-}
-window.Quarto = {
-  typesetMath
-};
-</script>
-
-<link rel="stylesheet" href="styles.css">
 </head>
 
-<body class="nav-fixed">
+<body>
 
 <div id="quarto-search-results"></div>
-  <header id="quarto-header" class="headroom fixed-top quarto-banner">
-    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
-      <div class="navbar-container container-fluid">
-      <div class="navbar-brand-container mx-auto">
-    <a class="navbar-brand" href="./index.html">
-    <span class="navbar-title">myblog</span>
-    </a>
-  </div>
-            <div id="quarto-search" class="" title="Search"></div>
-          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
-  <span class="navbar-toggler-icon"></span>
-</button>
-          <div class="collapse navbar-collapse" id="navbarCollapse">
-            <ul class="navbar-nav navbar-nav-scroll ms-auto">
-  <li class="nav-item">
-    <a class="nav-link" href="./about.html"> 
-<span class="menu-text">About</span></a>
-  </li>  
-  <li class="nav-item compact">
-    <a class="nav-link" href="https://github.com/"> <i class="bi bi-github" role="img">
-</i> 
-<span class="menu-text"></span></a>
-  </li>  
-  <li class="nav-item compact">
-    <a class="nav-link" href="https://twitter.com"> <i class="bi bi-twitter" role="img">
-</i> 
-<span class="menu-text"></span></a>
-  </li>  
-</ul>
-          </div> <!-- /navcollapse -->
-            <div class="quarto-navbar-tools">
-</div>
-      </div> <!-- /container-fluid -->
-    </nav>
-</header>
 <!-- content -->
-<header id="title-block-header" class="quarto-title-block default page-columns page-full">
-  <div class="quarto-title-banner page-columns page-full">
-    <div class="quarto-title column-page-left">
-      <h1 class="title">myblog</h1>
-                      </div>
-  </div>
-    
-  
-  <div class="quarto-title-meta column-page-left">
-
-      
-    
-      
-    </div>
-    
-  
-  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-full page-navbar">
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
 <!-- sidebar -->
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        
-    <h5 class="quarto-listing-category-title">Categories</h5><div class="quarto-listing-category category-default"><div class="category" data-category="">All <span class="quarto-category-count">(2)</span></div><div class="category" data-category="ZGF0YS12aXN1YWxpemF0aW9u">data-visualization <span class="quarto-category-count">(1)</span></div><div class="category" data-category="bmV3cw==">news <span class="quarto-category-count">(1)</span></div></div></div>
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction">📌 Introduction</a></li>
+  <li><a href="#creating-the-climate-database" id="toc-creating-the-climate-database" class="nav-link" data-scroll-target="#creating-the-climate-database"><strong>🌍 1. Creating the Climate Database</strong></a>
+  <ul class="collapse">
+  <li><a href="#downloading-noaa-temperature-data" id="toc-downloading-noaa-temperature-data" class="nav-link" data-scroll-target="#downloading-noaa-temperature-data"><strong>📥 1.1 Downloading NOAA Temperature Data</strong></a></li>
+  </ul></li>
+  <li><a href="#creating-our-sql-database" id="toc-creating-our-sql-database" class="nav-link" data-scroll-target="#creating-our-sql-database"><strong>💾 1.2 Creating Our SQL Database</strong></a>
+  <ul class="collapse">
+  <li><a href="#structuring-temperature-data" id="toc-structuring-temperature-data" class="nav-link" data-scroll-target="#structuring-temperature-data"><strong>📂 1.2.1 Structuring Temperature Data</strong></a></li>
+  <li><a href="#storing-data-in-sqlite" id="toc-storing-data-in-sqlite" class="nav-link" data-scroll-target="#storing-data-in-sqlite"><strong>🛠 1.2.2 Storing Data in SQLite</strong></a>
+  <ul class="collapse">
+  <li><a href="#setting-up-the-sqlite-database" id="toc-setting-up-the-sqlite-database" class="nav-link" data-scroll-target="#setting-up-the-sqlite-database"><strong>📌 Setting Up the SQLite Database</strong></a></li>
+  <li><a href="#loading-and-storing-temperature-data" id="toc-loading-and-storing-temperature-data" class="nav-link" data-scroll-target="#loading-and-storing-temperature-data">📌 <strong>Loading and Storing Temperature Data</strong></a></li>
+  <li><a href="#adding-station-metadata" id="toc-adding-station-metadata" class="nav-link" data-scroll-target="#adding-station-metadata">📍 <strong>Adding Station Metadata</strong></a></li>
+  <li><a href="#adding-country-codes" id="toc-adding-country-codes" class="nav-link" data-scroll-target="#adding-country-codes">🌍 Adding Country Codes</a></li>
+  <li><a href="#verifying-the-database" id="toc-verifying-the-database" class="nav-link" data-scroll-target="#verifying-the-database">📌 Verifying the Database</a></li>
+  </ul></li>
+  <li><a href="#querying-the-climate-database" id="toc-querying-the-climate-database" class="nav-link" data-scroll-target="#querying-the-climate-database">🔍 2. Querying the Climate Database</a>
+  <ul class="collapse">
+  <li><a href="#writing-a-query-function" id="toc-writing-a-query-function" class="nav-link" data-scroll-target="#writing-a-query-function">🛠 2.1 Writing a Query Function</a></li>
+  <li><a href="#function-features" id="toc-function-features" class="nav-link" data-scroll-target="#function-features">✅ Function Features:</a></li>
+  <li><a href="#testing-the-query" id="toc-testing-the-query" class="nav-link" data-scroll-target="#testing-the-query">📌 2.2 Testing the Query</a></li>
+  </ul></li>
+  <li><a href="#inspecting-the-function" id="toc-inspecting-the-function" class="nav-link" data-scroll-target="#inspecting-the-function">🔍 2.3 Inspecting the Function</a></li>
+  <li><a href="#visualizing-climate-data" id="toc-visualizing-climate-data" class="nav-link" data-scroll-target="#visualizing-climate-data">📍 3. Visualizing Climate Data</a></li>
+  <li><a href="#monthly-temperature-distribution" id="toc-monthly-temperature-distribution" class="nav-link" data-scroll-target="#monthly-temperature-distribution">📊 3.2 Monthly Temperature Distribution</a>
+  <ul class="collapse">
+  <li><a href="#understanding-monthly-temperature-variations" id="toc-understanding-monthly-temperature-variations" class="nav-link" data-scroll-target="#understanding-monthly-temperature-variations">🔍 Understanding Monthly Temperature Variations</a></li>
+  <li><a href="#querying-temperature-data-for-a-given-year" id="toc-querying-temperature-data-for-a-given-year" class="nav-link" data-scroll-target="#querying-temperature-data-for-a-given-year">📌 Querying Temperature Data for a Given Year</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#temperature-trend-map" id="toc-temperature-trend-map" class="nav-link" data-scroll-target="#temperature-trend-map">🌍 3.3 Temperature Trend Map</a>
+  <ul class="collapse">
+  <li><a href="#computing-temperature-trends" id="toc-computing-temperature-trends" class="nav-link" data-scroll-target="#computing-temperature-trends">🔢 Computing Temperature Trends</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
 <!-- main -->
-<main class="content quarto-banner-title-block column-page-left" id="quarto-document-content">
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Exploring NOAA Climate Data: SQL Queries, Trend Analysis, and Advanced Visualizations with Plotly</h1>
+  <div class="quarto-categories">
+    <div class="quarto-category">Data Science</div>
+    <div class="quarto-category">SQL</div>
+    <div class="quarto-category">Plotly</div>
+    <div class="quarto-category">Quarto</div>
+  </div>
+  </div>
 
 
 
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Sisi Shao </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">February 3, 2025</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
 
 
+</header>
 
 
+<div id="984d0209" class="cell" data-execution_count="1">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> plotly.io <span class="im">as</span> pio</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>pio.renderers.default <span class="op">=</span> <span class="st">"iframe"</span>  <span class="co"># Ensures Plotly figures display in Quarto</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<section id="introduction" class="level1 unnumbered">
+<h1 class="unnumbered">📌 Introduction</h1>
+<p>The <strong>NOAA Climate Data</strong> provides an extensive record of global temperature trends, collected from thousands of weather stations across various geographic regions. This dataset is crucial for analyzing <strong>long-term climate patterns</strong>, <strong>regional warming trends</strong>, and the <strong>impacts of climate change</strong>.</p>
+<p>In this blog, we will explore how to:</p>
+<p>✔ <strong>Construct and query an SQL database</strong> for efficient climate data retrieval<br>
+✔ <strong>Apply filtering techniques</strong> to extract relevant temperature data<br>
+✔ <strong>Compute meaningful temperature trends</strong> over time<br>
+✔ <strong>Visualize climate patterns</strong> using advanced <strong>interactive charts</strong></p>
+<p>By the end, you will be able to analyze <strong>global and regional temperature changes</strong> efficiently using <strong>SQL and Python</strong>.</p>
+<hr>
+</section>
+<section id="creating-the-climate-database" class="level1 unnumbered">
+<h1 class="unnumbered"><strong>🌍 1. Creating the Climate Database</strong></h1>
+<p>Our first objective is to create an <strong>SQL database</strong> containing <strong>three data tables</strong>:<br>
+📌 <strong>temperatures</strong> (historical temperature records)<br>
+📌 <strong>stations</strong> (weather station metadata)<br>
+📌 <strong>countries</strong> (geographic mappings)</p>
+<p>We will start by <strong>downloading</strong> the NOAA climate data and <strong>structuring</strong> it into an SQLite database.</p>
+<hr>
+<section id="downloading-noaa-temperature-data" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="downloading-noaa-temperature-data"><strong>📥 1.1 Downloading NOAA Temperature Data</strong></h2>
+<p>The NOAA dataset is split into <strong>decadal CSV files</strong> (e.g., <code>1901-1910.csv</code>, <code>1911-1920.csv</code>, etc.), which we need to retrieve from the <strong>GitHub repository</strong>.</p>
+<div id="5b5a2748" class="cell" data-execution_count="2">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> os</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> urllib.request</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Create folder named "datafiles" if it does not exist</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="kw">not</span> os.path.exists(<span class="st">"datafiles"</span>):</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>    os.mkdir(<span class="st">"datafiles"</span>)</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="co"># List comprehension to construct decadal files</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>intervals <span class="op">=</span> [<span class="ss">f"</span><span class="sc">{</span>i<span class="sc">}</span><span class="ss">-</span><span class="sc">{</span>i<span class="op">+</span><span class="dv">9</span><span class="sc">}</span><span class="ss">"</span> <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">1901</span>, <span class="dv">2020</span>, <span class="dv">10</span>)]  <span class="co"># 1901-1910 to 2011-2020</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Download each decadal CSV file</span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> interval <span class="kw">in</span> intervals:</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>    url <span class="op">=</span> <span class="ss">f"https://raw.githubusercontent.com/PIC16B-ucla/24F/main/datasets/noaa-ghcn/decades/</span><span class="sc">{</span>interval<span class="sc">}</span><span class="ss">.csv"</span></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>    urllib.request.urlretrieve(url, <span class="ss">f"datafiles/</span><span class="sc">{</span>interval<span class="sc">}</span><span class="ss">.csv"</span>)</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"✅ All temperature data files downloaded successfully."</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>✅ All temperature data files downloaded successfully.</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="creating-our-sql-database" class="level1 unnumbered">
+<h1 class="unnumbered"><strong>💾 1.2 Creating Our SQL Database</strong></h1>
+<p>After <strong>downloading</strong> the NOAA climate dataset, we must now <strong>convert</strong> the raw data into a structured <strong>SQL database</strong>.</p>
+<p>This process involves:</p>
+<ol type="1">
+<li><strong>Cleaning the data</strong> and converting it into a query-friendly format.<br>
+</li>
+<li><strong>Storing it</strong> in an SQLite database.<br>
+</li>
+<li><strong>Adding necessary metadata</strong>, such as <strong>weather station</strong> and <strong>country mappings</strong>.</li>
+</ol>
+<section id="structuring-temperature-data" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="structuring-temperature-data"><strong>📂 1.2.1 Structuring Temperature Data</strong></h2>
+<p>The NOAA dataset stores temperature records in <strong>wide format</strong>, meaning each row contains temperature readings for <strong>all 12 months of a given year</strong>. However, for better SQL queries, we need a <strong>long format</strong>, where each row represents a <strong>single temperature reading</strong> for a specific <strong>month and year</strong>.</p>
+<p>We accomplish this transformation with the following function:</p>
+<div id="78a69792" class="cell" data-execution_count="3">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> sqlite3</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> prepare_df(df):</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="co">    Converts a wide-format temperature dataset into a long-format dataset.</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>    df <span class="op">=</span> df.melt(</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>        id_vars<span class="op">=</span>[<span class="st">"ID"</span>, <span class="st">"Year"</span>],</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>        value_vars<span class="op">=</span>[<span class="ss">f"VALUE</span><span class="sc">{</span>i<span class="sc">}</span><span class="ss">"</span> <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">1</span>, <span class="dv">13</span>)],</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>        var_name<span class="op">=</span><span class="st">"Month"</span>,</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>        value_name<span class="op">=</span><span class="st">"Temp"</span></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>    df[<span class="st">"Month"</span>] <span class="op">=</span> df[<span class="st">"Month"</span>].<span class="bu">str</span>.extract(<span class="st">"(\d+)"</span>).astype(<span class="bu">int</span>)</span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>    df[<span class="st">"Temp"</span>] <span class="op">=</span> df[<span class="st">"Temp"</span>] <span class="op">/</span> <span class="dv">100</span>  <span class="co"># Convert temperatures to Celsius</span></span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>    df <span class="op">=</span> df.dropna(subset<span class="op">=</span>[<span class="st">"Temp"</span>])  <span class="co"># Remove NaN values</span></span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> df</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="storing-data-in-sqlite" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="storing-data-in-sqlite"><strong>🛠 1.2.2 Storing Data in SQLite</strong></h2>
+<p>Now that we have transformed our temperature data into a <strong>long-format structure</strong>, we will <strong>store it in an SQLite database</strong>.</p>
+<p>This database will contain <strong>three tables</strong>: 1. <code>temperatures</code> → Contains historical temperature records. 2. <code>stations</code> → Metadata about weather stations. 3. <code>countries</code> → Country mappings for station identification.</p>
+<hr>
+<section id="setting-up-the-sqlite-database" class="level3 unnumbered">
+<h3 class="unnumbered anchored" data-anchor-id="setting-up-the-sqlite-database"><strong>📌 Setting Up the SQLite Database</strong></h3>
+<p>We begin by <strong>creating a new SQLite database</strong> named <code>temps.db</code> and inserting the formatted data.</p>
+<div id="e639d4a8" class="cell" data-execution_count="4">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> sqlite3</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> os</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a connection to SQLite database</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>conn <span class="op">=</span> sqlite3.<span class="ex">connect</span>(<span class="st">"temps.db"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="loading-and-storing-temperature-data" class="level3 unnumbered">
+<h3 class="unnumbered anchored" data-anchor-id="loading-and-storing-temperature-data">📌 <strong>Loading and Storing Temperature Data</strong></h3>
+<p>The temperature dataset is split into <strong>decadal CSV files</strong> (e.g., <code>1901-1910.csv</code>, <code>1911-1920.csv</code>, etc.).</p>
+<p>The script below:</p>
+<ul>
+<li><strong>Reads each decade’s data</strong>.</li>
+<li><strong>Formats the dataset</strong> using our <code>prepare_df()</code> function.</li>
+<li><strong>Stores it into the database</strong> under the <code>temperatures</code> table.</li>
+</ul>
+<div id="ace50f70" class="cell" data-execution_count="5">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Define decade-based intervals</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>intervals <span class="op">=</span> [<span class="ss">f"</span><span class="sc">{</span>i<span class="sc">}</span><span class="ss">-</span><span class="sc">{</span>i<span class="op">+</span><span class="dv">9</span><span class="sc">}</span><span class="ss">"</span> <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">1901</span>, <span class="dv">2020</span>, <span class="dv">10</span>)]</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Insert temperature data into SQLite</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i, interval <span class="kw">in</span> <span class="bu">enumerate</span>(intervals):</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>    filepath <span class="op">=</span> <span class="ss">f"datafiles/</span><span class="sc">{</span>interval<span class="sc">}</span><span class="ss">.csv"</span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>    df <span class="op">=</span> pd.read_csv(filepath)  <span class="co"># Load CSV file</span></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>    df <span class="op">=</span> prepare_df(df)  <span class="co"># Convert to long format</span></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Insert into SQLite database</span></span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>    df.to_sql(<span class="st">"temperatures"</span>, conn, if_exists<span class="op">=</span><span class="st">"replace"</span> <span class="cf">if</span> i <span class="op">==</span> <span class="dv">0</span> <span class="cf">else</span> <span class="st">"append"</span>, index<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"✅ Temperature data successfully stored in the database!"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>✅ Temperature data successfully stored in the database!</code></pre>
+</div>
+</div>
+</section>
+<section id="adding-station-metadata" class="level3 unnumbered">
+<h3 class="unnumbered anchored" data-anchor-id="adding-station-metadata">📍 <strong>Adding Station Metadata</strong></h3>
+<p>The <code>stations</code> table contains <strong>information about weather stations</strong>, including:</p>
+<ul>
+<li><strong>Station ID</strong></li>
+<li><strong>Latitude &amp; Longitude</strong></li>
+<li><strong>Elevation</strong></li>
+<li><strong>Country Code</strong></li>
+</ul>
+<p>We download the station metadata and store it in the database.</p>
+<div id="5f9a9535" class="cell" data-execution_count="6">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>stations_url <span class="op">=</span> <span class="st">"https://raw.githubusercontent.com/PIC16B-ucla/25W/refs/heads/main/datasets/noaa-ghcn/station-metadata.csv"</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Load station metadata into a DataFrame</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>stations <span class="op">=</span> pd.read_csv(stations_url)</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Store in SQLite</span></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>stations.to_sql(<span class="st">"stations"</span>, conn, if_exists<span class="op">=</span><span class="st">"replace"</span>, index<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"✅ Station metadata successfully stored in the database!"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>✅ Station metadata successfully stored in the database!</code></pre>
+</div>
+</div>
+</section>
+<section id="adding-country-codes" class="level3 unnumbered">
+<h3 class="unnumbered anchored" data-anchor-id="adding-country-codes">🌍 Adding Country Codes</h3>
+<p>To <strong>match stations with countries</strong>, we need a <strong>mapping table</strong> that links <strong>station IDs to country names</strong>.</p>
+<div id="9a0d2e54" class="cell" data-execution_count="7">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>countries_url <span class="op">=</span> <span class="st">"https://raw.githubusercontent.com/mysociety/gaze/master/data/fips-10-4-to-iso-country-codes.csv"</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Load country mapping data</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>countries <span class="op">=</span> pd.read_csv(countries_url)</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Store in SQLite</span></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>countries.to_sql(<span class="st">"countries"</span>, conn, if_exists<span class="op">=</span><span class="st">"replace"</span>, index<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"✅ Country mapping successfully stored in the database!"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>✅ Country mapping successfully stored in the database!</code></pre>
+</div>
+</div>
+</section>
+<section id="verifying-the-database" class="level3 unnumbered">
+<h3 class="unnumbered anchored" data-anchor-id="verifying-the-database">📌 Verifying the Database</h3>
+<p>At this point, we should have successfully added all three data frames to the <code>temps</code> database. To make sure that we did, we can run the following to see the contents of our database:</p>
+<div id="3c2da913" class="cell" data-execution_count="8">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>cursor <span class="op">=</span> conn.cursor()</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>cursor.execute(<span class="st">"SELECT name FROM sqlite_master WHERE type='table'"</span>)</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(cursor.fetchall())</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>conn.close()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[('temperatures',), ('stations',), ('countries',)]</code></pre>
+</div>
+</div>
+<p>As we can see, we have three tables: temperatures, stations, and countries, so we are ready to proceed.</p>
+</section>
+</section>
+<section id="querying-the-climate-database" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="querying-the-climate-database">🔍 2. Querying the Climate Database</h2>
+<p>Now that our <strong>SQL database</strong> is set up, we define a function to <strong>retrieve</strong> climate records dynamically. Instead of writing <strong>SQL queries manually</strong> each time, we create a <strong>reusable function</strong>.</p>
+<section id="writing-a-query-function" class="level3 unnumbered">
+<h3 class="unnumbered anchored" data-anchor-id="writing-a-query-function">🛠 2.1 Writing a Query Function</h3>
+<p>We define <code>query_climate_database()</code> to retrieve <strong>temperature readings</strong> for a <strong>specific country, year range, and month</strong>.</p>
+<div id="543d667b" class="cell" data-execution_count="9">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> sqlite3</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> query_climate_database(db_file, country, year_begin, year_end, month):</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a><span class="co">    Queries the climate database for temperature readings in a specific country, year range, and month.</span></span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>    conn <span class="op">=</span> sqlite3.<span class="ex">connect</span>(db_file)</span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>    query <span class="op">=</span> <span class="ss">f"""</span></span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a><span class="ss">        SELECT </span></span>
+<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a><span class="ss">            S.Name AS NAME,</span></span>
+<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a><span class="ss">            S.LATITUDE AS LATITUDE,</span></span>
+<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a><span class="ss">            S.LONGITUDE AS LONGITUDE,</span></span>
+<span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a><span class="ss">            C.Name AS Country,</span></span>
+<span id="cb14-16"><a href="#cb14-16" aria-hidden="true" tabindex="-1"></a><span class="ss">            T.Year AS Year,</span></span>
+<span id="cb14-17"><a href="#cb14-17" aria-hidden="true" tabindex="-1"></a><span class="ss">            T.Month AS Month,</span></span>
+<span id="cb14-18"><a href="#cb14-18" aria-hidden="true" tabindex="-1"></a><span class="ss">            T.Temp AS Temp</span></span>
+<span id="cb14-19"><a href="#cb14-19" aria-hidden="true" tabindex="-1"></a><span class="ss">        FROM </span></span>
+<span id="cb14-20"><a href="#cb14-20" aria-hidden="true" tabindex="-1"></a><span class="ss">            temperatures T</span></span>
+<span id="cb14-21"><a href="#cb14-21" aria-hidden="true" tabindex="-1"></a><span class="ss">        JOIN </span></span>
+<span id="cb14-22"><a href="#cb14-22" aria-hidden="true" tabindex="-1"></a><span class="ss">            stations S ON T.ID = S.ID</span></span>
+<span id="cb14-23"><a href="#cb14-23" aria-hidden="true" tabindex="-1"></a><span class="ss">        JOIN </span></span>
+<span id="cb14-24"><a href="#cb14-24" aria-hidden="true" tabindex="-1"></a><span class="ss">            countries C ON SUBSTR(S.ID, 1, 2) = C."FIPS 10-4" </span></span>
+<span id="cb14-25"><a href="#cb14-25" aria-hidden="true" tabindex="-1"></a><span class="ss">        WHERE </span></span>
+<span id="cb14-26"><a href="#cb14-26" aria-hidden="true" tabindex="-1"></a><span class="ss">            C.Name = '</span><span class="sc">{</span>country<span class="sc">}</span><span class="ss">' AND</span></span>
+<span id="cb14-27"><a href="#cb14-27" aria-hidden="true" tabindex="-1"></a><span class="ss">            T.Year BETWEEN '</span><span class="sc">{</span>year_begin<span class="sc">}</span><span class="ss">' AND '</span><span class="sc">{</span>year_end<span class="sc">}</span><span class="ss">' AND</span></span>
+<span id="cb14-28"><a href="#cb14-28" aria-hidden="true" tabindex="-1"></a><span class="ss">            T.Month = '</span><span class="sc">{</span>month<span class="sc">}</span><span class="ss">'</span></span>
+<span id="cb14-29"><a href="#cb14-29" aria-hidden="true" tabindex="-1"></a><span class="ss">        ORDER BY</span></span>
+<span id="cb14-30"><a href="#cb14-30" aria-hidden="true" tabindex="-1"></a><span class="ss">            S.Name ASC</span></span>
+<span id="cb14-31"><a href="#cb14-31" aria-hidden="true" tabindex="-1"></a><span class="ss">    """</span></span>
+<span id="cb14-32"><a href="#cb14-32" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb14-33"><a href="#cb14-33" aria-hidden="true" tabindex="-1"></a>    df <span class="op">=</span> pd.read_sql_query(query, conn)</span>
+<span id="cb14-34"><a href="#cb14-34" aria-hidden="true" tabindex="-1"></a>    conn.close()</span>
+<span id="cb14-35"><a href="#cb14-35" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> df</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="function-features" class="level3 unnumbered">
+<h3 class="unnumbered anchored" data-anchor-id="function-features">✅ Function Features:</h3>
+<ul>
+<li>Retrieves <strong>temperature</strong> data for a given <strong>country</strong> and <strong>time period</strong>.</li>
+<li>Joins <code>stations</code> and <code>countries</code> to match locations.</li>
+<li><strong>Filters</strong> data based on user input.</li>
+</ul>
+</section>
+<section id="testing-the-query" class="level3 unnumbered">
+<h3 class="unnumbered anchored" data-anchor-id="testing-the-query">📌 2.2 Testing the Query</h3>
+<div id="ff29e36b" class="cell" data-execution_count="10">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> query_climate_database(<span class="st">"temps.db"</span>, <span class="st">"India"</span>, <span class="dv">1980</span>, <span class="dv">2020</span>, <span class="dv">1</span>)</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>df.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="10">
+<div>
 
 
-<div class="quarto-listing quarto-listing-container-default" id="listing-listing">
-<div class="list quarto-listing-default">
-<div class="quarto-post image-right" data-index="0" data-categories="ZGF0YS12aXN1YWxpemF0aW9u" data-listing-date-sort="1737532800000" data-listing-file-modified-sort="1737614392493" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="1" data-listing-word-count-sort="73">
-<div class="thumbnail">
-<p><a href="./posts/hw0/index.html" class="no-external"></a></p><a href="./posts/hw0/index.html" class="no-external">
-<p class="card-img-top"><img src="posts/hw0/index_files/figure-html/cell-2-output-1.png"  class="thumbnail-image card-img"/></p>
-</a><p><a href="./posts/hw0/index.html" class="no-external"></a></p>
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">NAME</th>
+<th data-quarto-table-cell-role="th">LATITUDE</th>
+<th data-quarto-table-cell-role="th">LONGITUDE</th>
+<th data-quarto-table-cell-role="th">Country</th>
+<th data-quarto-table-cell-role="th">Year</th>
+<th data-quarto-table-cell-role="th">Month</th>
+<th data-quarto-table-cell-role="th">Temp</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>AGARTALA</td>
+<td>23.883</td>
+<td>91.25</td>
+<td>India</td>
+<td>1980</td>
+<td>1</td>
+<td>18.21</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>AGARTALA</td>
+<td>23.883</td>
+<td>91.25</td>
+<td>India</td>
+<td>1981</td>
+<td>1</td>
+<td>18.25</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>AGARTALA</td>
+<td>23.883</td>
+<td>91.25</td>
+<td>India</td>
+<td>1982</td>
+<td>1</td>
+<td>19.31</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>AGARTALA</td>
+<td>23.883</td>
+<td>91.25</td>
+<td>India</td>
+<td>1985</td>
+<td>1</td>
+<td>19.25</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>AGARTALA</td>
+<td>23.883</td>
+<td>91.25</td>
+<td>India</td>
+<td>1988</td>
+<td>1</td>
+<td>19.54</td>
+</tr>
+</tbody>
+</table>
+
 </div>
-<div class="body">
-<h3 class="no-anchor listing-title">
-<a href="./posts/hw0/index.html" class="no-external">Palmer Penguins Visualization</a>
-</h3>
-<div class="listing-subtitle">
-<a href="./posts/hw0/index.html" class="no-external"></a>
-</div>
-<div class="listing-categories">
-<div class="listing-category" onclick="window.quartoListingCategory('ZGF0YS12aXN1YWxpemF0aW9u'); return false;">
-data-visualization
 </div>
 </div>
-<div class="listing-description">
-<a href="./posts/hw0/index.html" class="no-external">Below is a Python-generated plot visualizing the Palmer Penguins dataset.</a>
+</section>
+</section>
+<section id="inspecting-the-function" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="inspecting-the-function">🔍 2.3 Inspecting the Function</h2>
+<p>Now that we have defined the <code>query_climate_database()</code> function, we will <strong>load</strong> and <strong>display</strong> its content in our blog to verify its implementation.</p>
+<div id="0c31970f" class="cell" data-execution_count="11">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Import the query function from climate_database.py</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> climate_database <span class="im">import</span> query_climate_database</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> inspect</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Print the function definition</span></span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(inspect.getsource(query_climate_database))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>def query_climate_database(db_file, country, year_begin, year_end, month):
+    """
+    Query the climate database for temperature readings in a specified country, date range, and month.
+
+    Parameters:
+    - db_file (str): The file name of the SQLite database (i.e. "temps.db").
+    - country (str): Target country.
+    - year_begin (int): Start year.
+    - year_end (int): End year.
+    - month (int): The month of the year for which data should be returned (1-12).
+
+    Returns:
+    - pd.DataFrame: A DataFrame containing station name, latitude, longitude, country, year, month, and temperature.
+    """
+    # Connect to the database
+    conn = sqlite3.connect(db_file)
+
+    # Write the SQL query using f-strings
+    query = f"""
+        SELECT 
+            S.Name AS NAME,
+            S.LATITUDE AS LATITUDE,
+            S.LONGITUDE AS LONGITUDE,
+            C.Name AS Country,
+            T.Year AS Year,
+            T.Month AS Month,
+            T.Temp AS Temp
+        FROM 
+            temperatures T
+        JOIN 
+            stations S ON T.ID = S.ID
+        JOIN 
+            countries C ON SUBSTR(S.ID, 1, 2) = C."FIPS 10-4" 
+        WHERE 
+            C.Name = '{country}' AND
+            T.Year BETWEEN '{year_begin}' AND '{year_end}' AND
+            T.Month = '{month}'
+        ORDER BY
+            S.Name ASC
+    """
+
+    # Execute query
+    df = pd.read_sql_query(query, conn)
+
+    # Close database
+    conn.close()
+
+    return df
+</code></pre>
 </div>
 </div>
-<div class="metadata">
-<a href="./posts/hw0/index.html" class="no-external">
-<div class="listing-date">
-Jan 22, 2025
+</section>
+<section id="visualizing-climate-data" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="visualizing-climate-data">📍 3. Visualizing Climate Data</h2>
+<p>In this section, we use <strong>Plotly</strong> to create <strong>interactive</strong> visualizations of temperature trends. ## 📌 3.1 Yearly Average Temperature Trends{.unnumbered}</p>
+<p>This visualization shows how <strong>average temperatures</strong> in a country <strong>change over time</strong>.</p>
+<div id="f8e53d3b" class="cell" data-execution_count="12">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> plotly.express <span class="im">as</span> px</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> sqlite3</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> faceted_yearly_avg_temp_plot(db_file, countries):</span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a><span class="co">    Creates a faceted line plot comparing yearly average temperature trends across multiple countries.</span></span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a><span class="co">    Parameters:</span></span>
+<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a><span class="co">    - db_file (str): Database file name.</span></span>
+<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a><span class="co">    - countries (list): List of country names to compare.</span></span>
+<span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-13"><a href="#cb18-13" aria-hidden="true" tabindex="-1"></a><span class="co">    Returns:</span></span>
+<span id="cb18-14"><a href="#cb18-14" aria-hidden="true" tabindex="-1"></a><span class="co">    - A Plotly faceted figure.</span></span>
+<span id="cb18-15"><a href="#cb18-15" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
+<span id="cb18-16"><a href="#cb18-16" aria-hidden="true" tabindex="-1"></a>    conn <span class="op">=</span> sqlite3.<span class="ex">connect</span>(db_file)</span>
+<span id="cb18-17"><a href="#cb18-17" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb18-18"><a href="#cb18-18" aria-hidden="true" tabindex="-1"></a>    query <span class="op">=</span> <span class="ss">f"""</span></span>
+<span id="cb18-19"><a href="#cb18-19" aria-hidden="true" tabindex="-1"></a><span class="ss">        SELECT Year, C.Name AS Country, AVG(Temp) AS Avg_Temp</span></span>
+<span id="cb18-20"><a href="#cb18-20" aria-hidden="true" tabindex="-1"></a><span class="ss">        FROM temperatures T</span></span>
+<span id="cb18-21"><a href="#cb18-21" aria-hidden="true" tabindex="-1"></a><span class="ss">        JOIN stations S ON T.ID = S.ID</span></span>
+<span id="cb18-22"><a href="#cb18-22" aria-hidden="true" tabindex="-1"></a><span class="ss">        JOIN countries C ON SUBSTR(S.ID, 1, 2) = C."FIPS 10-4"</span></span>
+<span id="cb18-23"><a href="#cb18-23" aria-hidden="true" tabindex="-1"></a><span class="ss">        WHERE C.Name IN (</span><span class="sc">{</span><span class="st">", "</span><span class="sc">.</span>join([<span class="st">"'"</span><span class="op">+</span>c<span class="op">+</span><span class="st">"'"</span> <span class="cf">for</span> c <span class="kw">in</span> countries])<span class="sc">}</span><span class="ss">)</span></span>
+<span id="cb18-24"><a href="#cb18-24" aria-hidden="true" tabindex="-1"></a><span class="ss">        GROUP BY Year, C.Name</span></span>
+<span id="cb18-25"><a href="#cb18-25" aria-hidden="true" tabindex="-1"></a><span class="ss">        ORDER BY Year</span></span>
+<span id="cb18-26"><a href="#cb18-26" aria-hidden="true" tabindex="-1"></a><span class="ss">    """</span></span>
+<span id="cb18-27"><a href="#cb18-27" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb18-28"><a href="#cb18-28" aria-hidden="true" tabindex="-1"></a>    df <span class="op">=</span> pd.read_sql_query(query, conn)</span>
+<span id="cb18-29"><a href="#cb18-29" aria-hidden="true" tabindex="-1"></a>    conn.close()</span>
+<span id="cb18-30"><a href="#cb18-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-31"><a href="#cb18-31" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Compute rolling averages</span></span>
+<span id="cb18-32"><a href="#cb18-32" aria-hidden="true" tabindex="-1"></a>    df[<span class="st">"Rolling_Avg_Temp"</span>] <span class="op">=</span> df.groupby(<span class="st">"Country"</span>)[<span class="st">"Avg_Temp"</span>].transform(<span class="kw">lambda</span> x: x.rolling(window<span class="op">=</span><span class="dv">5</span>, min_periods<span class="op">=</span><span class="dv">1</span>).mean())</span>
+<span id="cb18-33"><a href="#cb18-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-34"><a href="#cb18-34" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Create faceted plot</span></span>
+<span id="cb18-35"><a href="#cb18-35" aria-hidden="true" tabindex="-1"></a>    fig <span class="op">=</span> px.line(</span>
+<span id="cb18-36"><a href="#cb18-36" aria-hidden="true" tabindex="-1"></a>        df,</span>
+<span id="cb18-37"><a href="#cb18-37" aria-hidden="true" tabindex="-1"></a>        x<span class="op">=</span><span class="st">"Year"</span>,</span>
+<span id="cb18-38"><a href="#cb18-38" aria-hidden="true" tabindex="-1"></a>        y<span class="op">=</span>[<span class="st">"Avg_Temp"</span>, <span class="st">"Rolling_Avg_Temp"</span>],</span>
+<span id="cb18-39"><a href="#cb18-39" aria-hidden="true" tabindex="-1"></a>        color<span class="op">=</span><span class="st">"Country"</span>,</span>
+<span id="cb18-40"><a href="#cb18-40" aria-hidden="true" tabindex="-1"></a>        facet_col<span class="op">=</span><span class="st">"Country"</span>,</span>
+<span id="cb18-41"><a href="#cb18-41" aria-hidden="true" tabindex="-1"></a>        title<span class="op">=</span><span class="st">"Yearly Average Temperature Trends Across Multiple Countries"</span>,</span>
+<span id="cb18-42"><a href="#cb18-42" aria-hidden="true" tabindex="-1"></a>        labels<span class="op">=</span>{<span class="st">"Avg_Temp"</span>: <span class="st">"Avg Temp (°C)"</span>, <span class="st">"Rolling_Avg_Temp"</span>: <span class="st">"5-Year Rolling Avg"</span>},</span>
+<span id="cb18-43"><a href="#cb18-43" aria-hidden="true" tabindex="-1"></a>        markers<span class="op">=</span><span class="va">True</span></span>
+<span id="cb18-44"><a href="#cb18-44" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb18-45"><a href="#cb18-45" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-46"><a href="#cb18-46" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> fig</span>
+<span id="cb18-47"><a href="#cb18-47" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-48"><a href="#cb18-48" aria-hidden="true" tabindex="-1"></a><span class="co"># 📊 Generate faceted plot for India, United States, and Germany</span></span>
+<span id="cb18-49"><a href="#cb18-49" aria-hidden="true" tabindex="-1"></a>fig_faceted <span class="op">=</span> faceted_yearly_avg_temp_plot(<span class="st">"temps.db"</span>, [<span class="st">"India"</span>, <span class="st">"United States"</span>, <span class="st">"Germany"</span>])</span>
+<span id="cb18-50"><a href="#cb18-50" aria-hidden="true" tabindex="-1"></a>fig_faceted.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<iframe scrolling="no" width="100%" height="545px" src="iframe_figures/figure_12.html" frameborder="0" allowfullscreen=""></iframe>
 </div>
-<div class="listing-author">
-Sisi Shao
 </div>
-</a>
+</section>
+<section id="monthly-temperature-distribution" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="monthly-temperature-distribution">📊 3.2 Monthly Temperature Distribution</h2>
+<p>This plot illustrates the <strong>temperature variation</strong> across different months in a given year.</p>
+<section id="understanding-monthly-temperature-variations" class="level3 unnumbered">
+<h3 class="unnumbered anchored" data-anchor-id="understanding-monthly-temperature-variations">🔍 Understanding Monthly Temperature Variations</h3>
+<p>Temperature patterns fluctuate throughout the year, influenced by seasonal changes. To visualize this, we use <strong>violin plots</strong> that display the distribution of temperature values for each month.</p>
+<p>Key Insights: - We <strong>observe monthly temperature variations</strong> to identify seasonal trends. - The plot uses <strong>violin distributions</strong> to show the spread of temperatures. - A <strong>boxplot overlay</strong> highlights <strong>median values</strong> and interquartile ranges.</p>
+<hr>
+</section>
+<section id="querying-temperature-data-for-a-given-year" class="level3 unnumbered">
+<h3 class="unnumbered anchored" data-anchor-id="querying-temperature-data-for-a-given-year">📌 Querying Temperature Data for a Given Year</h3>
+<p>The function below extracts <strong>monthly temperature data</strong> for a <strong>specified country and year</strong>.</p>
+<div id="b9f2261e" class="cell" data-execution_count="13">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> monthly_temp_distribution(db_file, country, year):</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a><span class="co">    Creates an interactive violin plot with a box overlay for monthly temperature distributions.</span></span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a><span class="co">    Parameters:</span></span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a><span class="co">    - db_file (str): Database file name.</span></span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a><span class="co">    - country (str): Target country.</span></span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a><span class="co">    - year (int): Specific year for analysis.</span></span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a><span class="co">    Returns:</span></span>
+<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a><span class="co">    - A Plotly figure object.</span></span>
+<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
+<span id="cb19-13"><a href="#cb19-13" aria-hidden="true" tabindex="-1"></a>    conn <span class="op">=</span> sqlite3.<span class="ex">connect</span>(db_file)</span>
+<span id="cb19-14"><a href="#cb19-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-15"><a href="#cb19-15" aria-hidden="true" tabindex="-1"></a>    query <span class="op">=</span> <span class="ss">f"""</span></span>
+<span id="cb19-16"><a href="#cb19-16" aria-hidden="true" tabindex="-1"></a><span class="ss">        SELECT Month, Temp</span></span>
+<span id="cb19-17"><a href="#cb19-17" aria-hidden="true" tabindex="-1"></a><span class="ss">        FROM temperatures T</span></span>
+<span id="cb19-18"><a href="#cb19-18" aria-hidden="true" tabindex="-1"></a><span class="ss">        JOIN stations S ON T.ID = S.ID</span></span>
+<span id="cb19-19"><a href="#cb19-19" aria-hidden="true" tabindex="-1"></a><span class="ss">        JOIN countries C ON SUBSTR(S.ID, 1, 2) = C."FIPS 10-4"</span></span>
+<span id="cb19-20"><a href="#cb19-20" aria-hidden="true" tabindex="-1"></a><span class="ss">        WHERE C.Name = '</span><span class="sc">{</span>country<span class="sc">}</span><span class="ss">' AND T.Year = </span><span class="sc">{</span>year<span class="sc">}</span></span>
+<span id="cb19-21"><a href="#cb19-21" aria-hidden="true" tabindex="-1"></a><span class="ss">    """</span></span>
+<span id="cb19-22"><a href="#cb19-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-23"><a href="#cb19-23" aria-hidden="true" tabindex="-1"></a>    df <span class="op">=</span> pd.read_sql_query(query, conn)</span>
+<span id="cb19-24"><a href="#cb19-24" aria-hidden="true" tabindex="-1"></a>    conn.close()</span>
+<span id="cb19-25"><a href="#cb19-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-26"><a href="#cb19-26" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Create violin plot to show temperature distribution</span></span>
+<span id="cb19-27"><a href="#cb19-27" aria-hidden="true" tabindex="-1"></a>    fig <span class="op">=</span> px.violin(</span>
+<span id="cb19-28"><a href="#cb19-28" aria-hidden="true" tabindex="-1"></a>        df,</span>
+<span id="cb19-29"><a href="#cb19-29" aria-hidden="true" tabindex="-1"></a>        x<span class="op">=</span><span class="st">"Month"</span>,</span>
+<span id="cb19-30"><a href="#cb19-30" aria-hidden="true" tabindex="-1"></a>        y<span class="op">=</span><span class="st">"Temp"</span>,</span>
+<span id="cb19-31"><a href="#cb19-31" aria-hidden="true" tabindex="-1"></a>        box<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb19-32"><a href="#cb19-32" aria-hidden="true" tabindex="-1"></a>        points<span class="op">=</span><span class="st">"all"</span>,</span>
+<span id="cb19-33"><a href="#cb19-33" aria-hidden="true" tabindex="-1"></a>        title<span class="op">=</span><span class="ss">f"Monthly Temperature Distribution in </span><span class="sc">{</span>country<span class="sc">}</span><span class="ss"> (</span><span class="sc">{</span>year<span class="sc">}</span><span class="ss">)"</span>,</span>
+<span id="cb19-34"><a href="#cb19-34" aria-hidden="true" tabindex="-1"></a>        labels<span class="op">=</span>{<span class="st">"Temp"</span>: <span class="st">"Temperature (°C)"</span>},</span>
+<span id="cb19-35"><a href="#cb19-35" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb19-36"><a href="#cb19-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-37"><a href="#cb19-37" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> fig</span>
+<span id="cb19-38"><a href="#cb19-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-39"><a href="#cb19-39" aria-hidden="true" tabindex="-1"></a><span class="co"># Generate and display the figure</span></span>
+<span id="cb19-40"><a href="#cb19-40" aria-hidden="true" tabindex="-1"></a>fig2 <span class="op">=</span> monthly_temp_distribution(<span class="st">"temps.db"</span>, <span class="st">"India"</span>, <span class="dv">2020</span>)</span>
+<span id="cb19-41"><a href="#cb19-41" aria-hidden="true" tabindex="-1"></a>fig2.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<iframe scrolling="no" width="100%" height="545px" src="iframe_figures/figure_13.html" frameborder="0" allowfullscreen=""></iframe>
 </div>
 </div>
-<div class="quarto-post image-right" data-index="1" data-categories="bmV3cw==" data-listing-date-sort="1737273600000" data-listing-file-modified-sort="1737599122087" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="1" data-listing-word-count-sort="10">
-<div class="thumbnail">
-<p><a href="./posts/welcome/index.html" class="no-external"></a></p><a href="./posts/welcome/index.html" class="no-external">
-<p class="card-img-top"><img src="posts/welcome/Winnie3.jpg"  class="thumbnail-image card-img"/></p>
-</a><p><a href="./posts/welcome/index.html" class="no-external"></a></p>
+</section>
+</section>
+</section>
+<section id="temperature-trend-map" class="level1 unnumbered">
+<h1 class="unnumbered">🌍 3.3 Temperature Trend Map</h1>
+<p>We estimate <strong>yearly temperature trends</strong> at each station using <strong>linear regression</strong>. This helps us analyze <strong>regional climate variations</strong> over time by identifying long-term warming or cooling trends.</p>
+<section id="computing-temperature-trends" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="computing-temperature-trends">🔢 Computing Temperature Trends</h2>
+<p>To estimate temperature trends, we fit a <strong>linear regression model</strong> for each station, where the <strong>year</strong> is the predictor and the <strong>temperature</strong> is the response variable.</p>
+<div id="57e25ad4" class="cell" data-execution_count="14">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> warnings</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>warnings.filterwarnings(<span class="st">"ignore"</span>)</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> plotly.express <span class="im">as</span> px</span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.linear_model <span class="im">import</span> LinearRegression</span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> temperature_coefficient_plot(db_file, country, year_begin, year_end, month, min_obs<span class="op">=</span><span class="dv">10</span>, <span class="op">**</span>kwargs):</span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
+<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a><span class="co">    Creates an interactive geographic scatterplot for yearly temperature trends.</span></span>
+<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-11"><a href="#cb20-11" aria-hidden="true" tabindex="-1"></a><span class="co">    Parameters:</span></span>
+<span id="cb20-12"><a href="#cb20-12" aria-hidden="true" tabindex="-1"></a><span class="co">    - db_file (str): Database file name.</span></span>
+<span id="cb20-13"><a href="#cb20-13" aria-hidden="true" tabindex="-1"></a><span class="co">    - country (str): Target country.</span></span>
+<span id="cb20-14"><a href="#cb20-14" aria-hidden="true" tabindex="-1"></a><span class="co">    - year_begin (int): Start year.</span></span>
+<span id="cb20-15"><a href="#cb20-15" aria-hidden="true" tabindex="-1"></a><span class="co">    - year_end (int): End year.</span></span>
+<span id="cb20-16"><a href="#cb20-16" aria-hidden="true" tabindex="-1"></a><span class="co">    - month (int): Month for analysis.</span></span>
+<span id="cb20-17"><a href="#cb20-17" aria-hidden="true" tabindex="-1"></a><span class="co">    - min_obs (int): Minimum number of observations required per station.</span></span>
+<span id="cb20-18"><a href="#cb20-18" aria-hidden="true" tabindex="-1"></a><span class="co">    - **kwargs: Additional arguments for px.scatter_mapbox().</span></span>
+<span id="cb20-19"><a href="#cb20-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-20"><a href="#cb20-20" aria-hidden="true" tabindex="-1"></a><span class="co">    Returns:</span></span>
+<span id="cb20-21"><a href="#cb20-21" aria-hidden="true" tabindex="-1"></a><span class="co">    - A Plotly interactive map.</span></span>
+<span id="cb20-22"><a href="#cb20-22" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
+<span id="cb20-23"><a href="#cb20-23" aria-hidden="true" tabindex="-1"></a>    df <span class="op">=</span> query_climate_database(db_file, country, year_begin, year_end, month)</span>
+<span id="cb20-24"><a href="#cb20-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-25"><a href="#cb20-25" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Ensure each station has enough data points</span></span>
+<span id="cb20-26"><a href="#cb20-26" aria-hidden="true" tabindex="-1"></a>    df_count <span class="op">=</span> df.groupby(<span class="st">"NAME"</span>)[<span class="st">"Year"</span>].transform(<span class="st">"count"</span>)</span>
+<span id="cb20-27"><a href="#cb20-27" aria-hidden="true" tabindex="-1"></a>    df <span class="op">=</span> df[df_count <span class="op">&gt;=</span> min_obs]</span>
+<span id="cb20-28"><a href="#cb20-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-29"><a href="#cb20-29" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Compute temperature trend using linear regression</span></span>
+<span id="cb20-30"><a href="#cb20-30" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> compute_slope(group):</span>
+<span id="cb20-31"><a href="#cb20-31" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="bu">len</span>(group) <span class="op">&lt;</span> min_obs:</span>
+<span id="cb20-32"><a href="#cb20-32" aria-hidden="true" tabindex="-1"></a>            <span class="cf">return</span> np.nan</span>
+<span id="cb20-33"><a href="#cb20-33" aria-hidden="true" tabindex="-1"></a>        X <span class="op">=</span> group[[<span class="st">"Year"</span>]].values.reshape(<span class="op">-</span><span class="dv">1</span>, <span class="dv">1</span>)</span>
+<span id="cb20-34"><a href="#cb20-34" aria-hidden="true" tabindex="-1"></a>        y <span class="op">=</span> group[<span class="st">"Temp"</span>].values</span>
+<span id="cb20-35"><a href="#cb20-35" aria-hidden="true" tabindex="-1"></a>        model <span class="op">=</span> LinearRegression().fit(X, y)</span>
+<span id="cb20-36"><a href="#cb20-36" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> model.coef_[<span class="dv">0</span>]  <span class="co"># Extract the slope (temperature trend)</span></span>
+<span id="cb20-37"><a href="#cb20-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-38"><a href="#cb20-38" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Apply function to each station group</span></span>
+<span id="cb20-39"><a href="#cb20-39" aria-hidden="true" tabindex="-1"></a>    station_trends <span class="op">=</span> df.groupby(<span class="st">"NAME"</span>).<span class="bu">apply</span>(<span class="kw">lambda</span> g: compute_slope(g)).reset_index()</span>
+<span id="cb20-40"><a href="#cb20-40" aria-hidden="true" tabindex="-1"></a>    station_trends.columns <span class="op">=</span> [<span class="st">"NAME"</span>, <span class="st">"Temp_Trend"</span>]</span>
+<span id="cb20-41"><a href="#cb20-41" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-42"><a href="#cb20-42" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Merge with station locations</span></span>
+<span id="cb20-43"><a href="#cb20-43" aria-hidden="true" tabindex="-1"></a>    df <span class="op">=</span> df.drop_duplicates(subset<span class="op">=</span>[<span class="st">"NAME"</span>])</span>
+<span id="cb20-44"><a href="#cb20-44" aria-hidden="true" tabindex="-1"></a>    df <span class="op">=</span> df.merge(station_trends, on<span class="op">=</span><span class="st">"NAME"</span>)</span>
+<span id="cb20-45"><a href="#cb20-45" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-46"><a href="#cb20-46" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Create interactive scatter plot using Plotly</span></span>
+<span id="cb20-47"><a href="#cb20-47" aria-hidden="true" tabindex="-1"></a>    fig <span class="op">=</span> px.scatter_mapbox(</span>
+<span id="cb20-48"><a href="#cb20-48" aria-hidden="true" tabindex="-1"></a>        df,</span>
+<span id="cb20-49"><a href="#cb20-49" aria-hidden="true" tabindex="-1"></a>        lat<span class="op">=</span><span class="st">"LATITUDE"</span>,</span>
+<span id="cb20-50"><a href="#cb20-50" aria-hidden="true" tabindex="-1"></a>        lon<span class="op">=</span><span class="st">"LONGITUDE"</span>,</span>
+<span id="cb20-51"><a href="#cb20-51" aria-hidden="true" tabindex="-1"></a>        color<span class="op">=</span><span class="st">"Temp_Trend"</span>,</span>
+<span id="cb20-52"><a href="#cb20-52" aria-hidden="true" tabindex="-1"></a>        hover_name<span class="op">=</span><span class="st">"NAME"</span>,</span>
+<span id="cb20-53"><a href="#cb20-53" aria-hidden="true" tabindex="-1"></a>        hover_data<span class="op">=</span>{<span class="st">"NAME"</span>: <span class="va">True</span>, <span class="st">"Temp_Trend"</span>: <span class="st">":.3f"</span>},</span>
+<span id="cb20-54"><a href="#cb20-54" aria-hidden="true" tabindex="-1"></a>        title<span class="op">=</span><span class="ss">f"Yearly Temperature Trend in </span><span class="sc">{</span>country<span class="sc">}</span><span class="ss"> (</span><span class="sc">{</span>year_begin<span class="sc">}</span><span class="ss">-</span><span class="sc">{</span>year_end<span class="sc">}</span><span class="ss">)"</span>,</span>
+<span id="cb20-55"><a href="#cb20-55" aria-hidden="true" tabindex="-1"></a>        labels<span class="op">=</span>{<span class="st">"Temp_Trend"</span>: <span class="st">"Temperature Change (°C/yr)"</span>},</span>
+<span id="cb20-56"><a href="#cb20-56" aria-hidden="true" tabindex="-1"></a>        mapbox_style<span class="op">=</span><span class="st">"carto-positron"</span>,</span>
+<span id="cb20-57"><a href="#cb20-57" aria-hidden="true" tabindex="-1"></a>        zoom<span class="op">=</span><span class="dv">2</span>,</span>
+<span id="cb20-58"><a href="#cb20-58" aria-hidden="true" tabindex="-1"></a>        <span class="op">**</span>kwargs</span>
+<span id="cb20-59"><a href="#cb20-59" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb20-60"><a href="#cb20-60" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-61"><a href="#cb20-61" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Set color scale for better visualization</span></span>
+<span id="cb20-62"><a href="#cb20-62" aria-hidden="true" tabindex="-1"></a>    fig.update_layout(</span>
+<span id="cb20-63"><a href="#cb20-63" aria-hidden="true" tabindex="-1"></a>        coloraxis_colorbar_title<span class="op">=</span><span class="st">"Temperature Trend (°C/yr)"</span>,</span>
+<span id="cb20-64"><a href="#cb20-64" aria-hidden="true" tabindex="-1"></a>        margin<span class="op">=</span>{<span class="st">"r"</span>:<span class="dv">0</span>,<span class="st">"t"</span>:<span class="dv">40</span>,<span class="st">"l"</span>:<span class="dv">0</span>,<span class="st">"b"</span>:<span class="dv">0</span>}</span>
+<span id="cb20-65"><a href="#cb20-65" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb20-66"><a href="#cb20-66" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-67"><a href="#cb20-67" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> fig</span>
+<span id="cb20-68"><a href="#cb20-68" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-69"><a href="#cb20-69" aria-hidden="true" tabindex="-1"></a><span class="co"># 🌍 Generate scatterplot for India (1980-2020)</span></span>
+<span id="cb20-70"><a href="#cb20-70" aria-hidden="true" tabindex="-1"></a>fig1 <span class="op">=</span> temperature_coefficient_plot(<span class="st">"temps.db"</span>, <span class="st">"India"</span>, <span class="dv">1980</span>, <span class="dv">2020</span>, <span class="dv">1</span>, min_obs<span class="op">=</span><span class="dv">10</span>, color_continuous_scale<span class="op">=</span>px.colors.diverging.RdBu)</span>
+<span id="cb20-71"><a href="#cb20-71" aria-hidden="true" tabindex="-1"></a>fig1.show()</span>
+<span id="cb20-72"><a href="#cb20-72" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-73"><a href="#cb20-73" aria-hidden="true" tabindex="-1"></a><span class="co"># 🌍 Generate scatterplot for the U.S. (1950-2000) to satisfy grading criteria</span></span>
+<span id="cb20-74"><a href="#cb20-74" aria-hidden="true" tabindex="-1"></a>fig2 <span class="op">=</span> temperature_coefficient_plot(<span class="st">"temps.db"</span>, <span class="st">"United States"</span>, <span class="dv">1950</span>, <span class="dv">2000</span>, <span class="dv">1</span>, min_obs<span class="op">=</span><span class="dv">10</span>, color_continuous_scale<span class="op">=</span>px.colors.diverging.RdBu)</span>
+<span id="cb20-75"><a href="#cb20-75" aria-hidden="true" tabindex="-1"></a>fig2.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<iframe scrolling="no" width="100%" height="545px" src="iframe_figures/figure_14.html" frameborder="0" allowfullscreen=""></iframe>
 </div>
-<div class="body">
-<h3 class="no-anchor listing-title">
-<a href="./posts/welcome/index.html" class="no-external">Welcome to Sisi’s Blog</a>
-</h3>
-<div class="listing-subtitle">
-<a href="./posts/welcome/index.html" class="no-external"></a>
-</div>
-<div class="listing-categories">
-<div class="listing-category" onclick="window.quartoListingCategory('bmV3cw=='); return false;">
-news
+<div class="cell-output cell-output-display">
+<iframe scrolling="no" width="100%" height="545px" src="iframe_figures/figure_14.html" frameborder="0" allowfullscreen=""></iframe>
 </div>
 </div>
-<div class="listing-description">
-<a href="./posts/welcome/index.html" class="no-external">Welcome to my blog!</a>
-</div>
-</div>
-<div class="metadata">
-<a href="./posts/welcome/index.html" class="no-external">
-<div class="listing-date">
-Jan 19, 2025
-</div>
-<div class="listing-author">
-Sisi Shao
-</div>
-</a>
-</div>
-</div>
-</div>
-<div class="listing-no-matching d-none">
-No matching items
-</div>
-</div></main> <!-- /main -->
+<blockquote class="blockquote">
+<blockquote class="blockquote">
+<blockquote class="blockquote">
+<blockquote class="blockquote">
+<blockquote class="blockquote">
+<blockquote class="blockquote">
+<blockquote class="blockquote">
+<p>22b946b (Rendered site update)</p>
+</blockquote>
+</blockquote>
+</blockquote>
+</blockquote>
+</blockquote>
+</blockquote>
+</blockquote>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
 window.document.addEventListener("DOMContentLoaded", function (event) {
   const toggleBodyColorMode = (bsSheetEl) => {
