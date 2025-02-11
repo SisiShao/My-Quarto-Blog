@@ -4,7 +4,14 @@
     "href": "index.html",
     "title": "Welcome to My Blog",
     "section": "",
-    "text": "Blog Posts\n\nClimate Analysis\nWelcome Post"
+    "text": "Blog Posts\n\nClimate Analysis\nWelcome Post\nWeb Scraping"
+  },
+  {
+    "objectID": "posts/welcome/index.html",
+    "href": "posts/welcome/index.html",
+    "title": "Welcome to Sisi’s Blog",
+    "section": "",
+    "text": "Welcome to my blog!\n\nMy most beloved Winnie forever."
   },
   {
     "objectID": "posts/climate-analysis/index.html",
@@ -70,10 +77,66 @@
     "text": "🔢 Computing Temperature Trends\nTo estimate temperature trends, we fit a linear regression model for each station, where the year is the predictor and the temperature is the response variable.\n\nimport warnings\nwarnings.filterwarnings(\"ignore\")\nimport plotly.express as px\nfrom sklearn.linear_model import LinearRegression\nimport numpy as np\n\ndef temperature_coefficient_plot(db_file, country, year_begin, year_end, month, min_obs=10, **kwargs):\n    \"\"\"\n    Creates an interactive geographic scatterplot for yearly temperature trends.\n\n    Parameters:\n    - db_file (str): Database file name.\n    - country (str): Target country.\n    - year_begin (int): Start year.\n    - year_end (int): End year.\n    - month (int): Month for analysis.\n    - min_obs (int): Minimum number of observations required per station.\n    - **kwargs: Additional arguments for px.scatter_mapbox().\n\n    Returns:\n    - A Plotly interactive map.\n    \"\"\"\n    df = query_climate_database(db_file, country, year_begin, year_end, month)\n\n    # Ensure each station has enough data points\n    df_count = df.groupby(\"NAME\")[\"Year\"].transform(\"count\")\n    df = df[df_count &gt;= min_obs]\n\n    # Compute temperature trend using linear regression\n    def compute_slope(group):\n        if len(group) &lt; min_obs:\n            return np.nan\n        X = group[[\"Year\"]].values.reshape(-1, 1)\n        y = group[\"Temp\"].values\n        model = LinearRegression().fit(X, y)\n        return model.coef_[0]  # Extract the slope (temperature trend)\n\n    # Apply function to each station group\n    station_trends = df.groupby(\"NAME\").apply(lambda g: compute_slope(g)).reset_index()\n    station_trends.columns = [\"NAME\", \"Temp_Trend\"]\n\n    # Merge with station locations\n    df = df.drop_duplicates(subset=[\"NAME\"])\n    df = df.merge(station_trends, on=\"NAME\")\n\n    # Create interactive scatter plot using Plotly\n    fig = px.scatter_mapbox(\n        df,\n        lat=\"LATITUDE\",\n        lon=\"LONGITUDE\",\n        color=\"Temp_Trend\",\n        hover_name=\"NAME\",\n        hover_data={\"NAME\": True, \"Temp_Trend\": \":.3f\"},\n        title=f\"Yearly Temperature Trend in {country} ({year_begin}-{year_end})\",\n        labels={\"Temp_Trend\": \"Temperature Change (°C/yr)\"},\n        mapbox_style=\"carto-positron\",\n        zoom=2,\n        **kwargs\n    )\n\n    # Set color scale for better visualization\n    fig.update_layout(\n        coloraxis_colorbar_title=\"Temperature Trend (°C/yr)\",\n        margin={\"r\":0,\"t\":40,\"l\":0,\"b\":0}\n    )\n\n    return fig\n\n# 🌍 Generate scatterplot for India (1980-2020)\nfig1 = temperature_coefficient_plot(\"temps.db\", \"India\", 1980, 2020, 1, min_obs=10, color_continuous_scale=px.colors.diverging.RdBu)\nfig1.show()\n\n# 🌍 Generate scatterplot for the U.S. (1950-2000) to satisfy grading criteria\nfig2 = temperature_coefficient_plot(\"temps.db\", \"United States\", 1950, 2000, 1, min_obs=10, color_continuous_scale=px.colors.diverging.RdBu)\nfig2.show()\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n22b946b (Rendered site update)"
   },
   {
-    "objectID": "posts/welcome/index.html",
-    "href": "posts/welcome/index.html",
-    "title": "Welcome to Sisi’s Blog",
+    "objectID": "posts/Web-Scraping/index.html",
+    "href": "posts/Web-Scraping/index.html",
+    "title": "🎬 Web Scraping for Movie Recommendations",
     "section": "",
-    "text": "Welcome to my blog!\n\nMy most beloved Winnie forever."
+    "text": "Wouldn’t it be nice to find more shows similar to your favorite ones? Many modern platforms, such as Netflix and Spotify, use recommender systems to suggest content.\nIn this post, we will use web scraping to create a simple recommendation system based on shared actors between movies and TV shows.\n\n\n\nWe will scrape data from The Movie Database (TMDB) using the scrapy library.\n\n\nRun the following commands in your terminal:\nconda activate PIC16B-25W\nscrapy startproject TMDB_scraper\ncd TMDB_scraper\nModify the settings.py file to limit the number of pages scraped:\nCLOSESPIDER_PAGECOUNT = 20\n\n\n\n\nWe will implement a three-step scraper to:\n\nExtract actor links from a movie’s cast page.\nVisit each actor’s profile and extract their acting roles.\nFilter out non-acting roles and store only relevant movies & TV shows.\n\n📜 tmdb_spider.py (Scrapy Code)\nimport scrapy\n\nclass TmdbSpider(scrapy.Spider):\n    name = \"tmdb_spider\"\n\n    def __init__(self, subdir=\"\", *args, **kwargs):\n        \"\"\"Initialize the spider with a specific movie subdirectory from TMDB.\"\"\"\n        super().__init__(*args, **kwargs)\n        self.start_urls = [f\"https://www.themoviedb.org/movie/{subdir}/\"]\n\n    def parse(self, response):\n        \"\"\"Step 1: Navigate to the Full Cast & Crew page of the movie.\"\"\"\n        cast_url = response.url.rstrip(\"/\") + \"/cast\"\n        yield scrapy.Request(url=cast_url, callback=self.parse_full_credits)\n\n    def parse_full_credits(self, response):\n        \"\"\"Step 2: Extract all actor profile links and visit each actor's page.\"\"\"\n        actors = set(response.css(\"ol.people.credits:not(.crew) li a::attr(href)\").getall())  # Exclude crew members\n        for actor in actors:\n            #need callback=self.parse_actor_page to tell Scrapy to wait for the response before calling the function\n            yield response.follow(actor, callback=self.parse_actor_page)\n\n    def parse_actor_page(self, response):\n        \"\"\"Step 3: Extract the actor's name and their acting roles (only from the first Acting table).\"\"\"\n        actor_name = response.css(\"h2.title a::text, h1.title::text\").get()\n\n        movies = set(response.xpath(\n            \"//h3[contains(translate(text(), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), 'acting')]\"\n            \"/following-sibling::table[1]//td[contains(@class, 'role')]/a/bdi/text()\"\n        ).getall())\n\n        for movie in movies:\n            yield {\"actor\": actor_name.strip() if actor_name else \"Unknown\", \"movie_or_TV_name\": movie.strip()}\n\n\n\n\n\nThe parse() method is responsible for extracting actor links from a movie’s cast page. It assumes that the response is a movie page and uses CSS selectors to locate all cast members. Once the actor links are found, it follows each link and passes the response to parse_full_credits(), ensuring that the scraper retrieves detailed information about each actor’s filmography.\n\n\n\n\nThe parse_full_credits() method extracts the full list of movies and TV shows that an actor has appeared in. It assumes that the response comes from an actor’s profile page and navigates through the filmography section using CSS selectors. Each extracted role is then passed to parse_actor_page(), allowing the scraper to process only relevant acting roles and filter out other credits such as directing or producing.\n\n\n\n\nThe parse_actor_page() method processes the details of a movie or TV show that an actor has been involved in. It assumes that the response corresponds to a movie or TV show page and extracts the title along with the actor’s name. Additionally, it verifies whether the role is an acting role by checking the role description on the page. If the role qualifies, it yields a dictionary containing the actor’s name and the corresponding movie or TV show title, ensuring that only acting credits are stored in the final dataset.\n\n\n\n\nTo run the scraper for a specific movie like “Harry Potter and the Philosopher’s Stone”, use:\nscrapy crawl tmdb_spider -o results.csv -a subdir=671-harry-potter-and-the-philosophe\nThis will generate a CSV file with two columns:\n\nactor: Name of the actor\nmovie_or_TV_name: Movies or TV shows they have appeared in\n\n\n\n\nNow that we have the data, we can process it to find movies and TV shows that share actors with our favorite movie.\n\n\nWe use Pandas to count and sort the movies with the most shared actors:\n\n\nCode\nimport pandas as pd\n\n# Load scraped data\ndf = pd.read_csv(\"results.csv\")\n\n# Count occurrences of each movie/TV show\nrecommendations = df['movie_or_TV_name'].value_counts().reset_index()\nrecommendations.columns = ['Movie/TV Show', 'Number of Shared Actors']\n\n\n\n\n\n\nTo better understand the recommendations, we can create a bar chart:\n\n\nCode\nimport matplotlib.pyplot as plt\n\n# Plot top recommendations\nplt.figure(figsize=(10, 5))\nplt.barh(recommendations['Movie/TV Show'][:10], recommendations['Number of Shared Actors'][:10])\nplt.xlabel(\"Number of Shared Actors\")\nplt.ylabel(\"Movie/TV Show\")\nplt.title(\"Top 10 Movies/TV Shows with Shared Actors\")\nplt.gca().invert_yaxis()\nplt.show()\n\n\n\n\n\n\n\n\n\n\n\n\n\nWe built a web scraper using Scrapy to find shared actors between movies.\nWe extracted acting roles only from TMDB and stored them in a CSV file.\nWe used Pandas to count and Matplotlib to visualize the most frequently shared actors.\nThis approach provides a simple recommendation system based on shared cast members."
+  },
+  {
+    "objectID": "posts/Web-Scraping/index.html#introduction",
+    "href": "posts/Web-Scraping/index.html#introduction",
+    "title": "🎬 Web Scraping for Movie Recommendations",
+    "section": "",
+    "text": "Wouldn’t it be nice to find more shows similar to your favorite ones? Many modern platforms, such as Netflix and Spotify, use recommender systems to suggest content.\nIn this post, we will use web scraping to create a simple recommendation system based on shared actors between movies and TV shows."
+  },
+  {
+    "objectID": "posts/Web-Scraping/index.html#setting-up-the-scraper",
+    "href": "posts/Web-Scraping/index.html#setting-up-the-scraper",
+    "title": "🎬 Web Scraping for Movie Recommendations",
+    "section": "",
+    "text": "We will scrape data from The Movie Database (TMDB) using the scrapy library.\n\n\nRun the following commands in your terminal:\nconda activate PIC16B-25W\nscrapy startproject TMDB_scraper\ncd TMDB_scraper\nModify the settings.py file to limit the number of pages scraped:\nCLOSESPIDER_PAGECOUNT = 20"
+  },
+  {
+    "objectID": "posts/Web-Scraping/index.html#implementing-the-scraper",
+    "href": "posts/Web-Scraping/index.html#implementing-the-scraper",
+    "title": "🎬 Web Scraping for Movie Recommendations",
+    "section": "",
+    "text": "We will implement a three-step scraper to:\n\nExtract actor links from a movie’s cast page.\nVisit each actor’s profile and extract their acting roles.\nFilter out non-acting roles and store only relevant movies & TV shows.\n\n📜 tmdb_spider.py (Scrapy Code)\nimport scrapy\n\nclass TmdbSpider(scrapy.Spider):\n    name = \"tmdb_spider\"\n\n    def __init__(self, subdir=\"\", *args, **kwargs):\n        \"\"\"Initialize the spider with a specific movie subdirectory from TMDB.\"\"\"\n        super().__init__(*args, **kwargs)\n        self.start_urls = [f\"https://www.themoviedb.org/movie/{subdir}/\"]\n\n    def parse(self, response):\n        \"\"\"Step 1: Navigate to the Full Cast & Crew page of the movie.\"\"\"\n        cast_url = response.url.rstrip(\"/\") + \"/cast\"\n        yield scrapy.Request(url=cast_url, callback=self.parse_full_credits)\n\n    def parse_full_credits(self, response):\n        \"\"\"Step 2: Extract all actor profile links and visit each actor's page.\"\"\"\n        actors = set(response.css(\"ol.people.credits:not(.crew) li a::attr(href)\").getall())  # Exclude crew members\n        for actor in actors:\n            #need callback=self.parse_actor_page to tell Scrapy to wait for the response before calling the function\n            yield response.follow(actor, callback=self.parse_actor_page)\n\n    def parse_actor_page(self, response):\n        \"\"\"Step 3: Extract the actor's name and their acting roles (only from the first Acting table).\"\"\"\n        actor_name = response.css(\"h2.title a::text, h1.title::text\").get()\n\n        movies = set(response.xpath(\n            \"//h3[contains(translate(text(), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), 'acting')]\"\n            \"/following-sibling::table[1]//td[contains(@class, 'role')]/a/bdi/text()\"\n        ).getall())\n\n        for movie in movies:\n            yield {\"actor\": actor_name.strip() if actor_name else \"Unknown\", \"movie_or_TV_name\": movie.strip()}"
+  },
+  {
+    "objectID": "posts/Web-Scraping/index.html#parsing-methods-explained",
+    "href": "posts/Web-Scraping/index.html#parsing-methods-explained",
+    "title": "🎬 Web Scraping for Movie Recommendations",
+    "section": "",
+    "text": "The parse() method is responsible for extracting actor links from a movie’s cast page. It assumes that the response is a movie page and uses CSS selectors to locate all cast members. Once the actor links are found, it follows each link and passes the response to parse_full_credits(), ensuring that the scraper retrieves detailed information about each actor’s filmography.\n\n\n\n\nThe parse_full_credits() method extracts the full list of movies and TV shows that an actor has appeared in. It assumes that the response comes from an actor’s profile page and navigates through the filmography section using CSS selectors. Each extracted role is then passed to parse_actor_page(), allowing the scraper to process only relevant acting roles and filter out other credits such as directing or producing.\n\n\n\n\nThe parse_actor_page() method processes the details of a movie or TV show that an actor has been involved in. It assumes that the response corresponds to a movie or TV show page and extracts the title along with the actor’s name. Additionally, it verifies whether the role is an acting role by checking the role description on the page. If the role qualifies, it yields a dictionary containing the actor’s name and the corresponding movie or TV show title, ensuring that only acting credits are stored in the final dataset."
+  },
+  {
+    "objectID": "posts/Web-Scraping/index.html#running-the-scraper",
+    "href": "posts/Web-Scraping/index.html#running-the-scraper",
+    "title": "🎬 Web Scraping for Movie Recommendations",
+    "section": "",
+    "text": "To run the scraper for a specific movie like “Harry Potter and the Philosopher’s Stone”, use:\nscrapy crawl tmdb_spider -o results.csv -a subdir=671-harry-potter-and-the-philosophe\nThis will generate a CSV file with two columns:\n\nactor: Name of the actor\nmovie_or_TV_name: Movies or TV shows they have appeared in"
+  },
+  {
+    "objectID": "posts/Web-Scraping/index.html#making-recommendations",
+    "href": "posts/Web-Scraping/index.html#making-recommendations",
+    "title": "🎬 Web Scraping for Movie Recommendations",
+    "section": "",
+    "text": "Now that we have the data, we can process it to find movies and TV shows that share actors with our favorite movie.\n\n\nWe use Pandas to count and sort the movies with the most shared actors:\n\n\nCode\nimport pandas as pd\n\n# Load scraped data\ndf = pd.read_csv(\"results.csv\")\n\n# Count occurrences of each movie/TV show\nrecommendations = df['movie_or_TV_name'].value_counts().reset_index()\nrecommendations.columns = ['Movie/TV Show', 'Number of Shared Actors']"
+  },
+  {
+    "objectID": "posts/Web-Scraping/index.html#visualization",
+    "href": "posts/Web-Scraping/index.html#visualization",
+    "title": "🎬 Web Scraping for Movie Recommendations",
+    "section": "",
+    "text": "To better understand the recommendations, we can create a bar chart:\n\n\nCode\nimport matplotlib.pyplot as plt\n\n# Plot top recommendations\nplt.figure(figsize=(10, 5))\nplt.barh(recommendations['Movie/TV Show'][:10], recommendations['Number of Shared Actors'][:10])\nplt.xlabel(\"Number of Shared Actors\")\nplt.ylabel(\"Movie/TV Show\")\nplt.title(\"Top 10 Movies/TV Shows with Shared Actors\")\nplt.gca().invert_yaxis()\nplt.show()"
+  },
+  {
+    "objectID": "posts/Web-Scraping/index.html#summary",
+    "href": "posts/Web-Scraping/index.html#summary",
+    "title": "🎬 Web Scraping for Movie Recommendations",
+    "section": "",
+    "text": "We built a web scraper using Scrapy to find shared actors between movies.\nWe extracted acting roles only from TMDB and stored them in a CSV file.\nWe used Pandas to count and Matplotlib to visualize the most frequently shared actors.\nThis approach provides a simple recommendation system based on shared cast members."
   }
 ]

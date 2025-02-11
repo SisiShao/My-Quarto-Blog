@@ -2,14 +2,18 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://SisiShao.github.io/My-Quarto-Blog/index.html</loc>
-    <lastmod>2025-02-05T22:58:41.831Z</lastmod>
+    <lastmod>2025-02-11T12:54:07.634Z</lastmod>
+  </url>
+  <url>
+    <loc>https://SisiShao.github.io/My-Quarto-Blog/posts/welcome/index.html</loc>
+    <lastmod>2025-02-04T07:19:41.479Z</lastmod>
   </url>
   <url>
     <loc>https://SisiShao.github.io/My-Quarto-Blog/posts/climate-analysis/index.html</loc>
     <lastmod>2025-02-05T14:23:46.653Z</lastmod>
   </url>
   <url>
-    <loc>https://SisiShao.github.io/My-Quarto-Blog/posts/welcome/index.html</loc>
-    <lastmod>2025-02-04T07:19:41.479Z</lastmod>
+    <loc>https://SisiShao.github.io/My-Quarto-Blog/posts/Web-Scraping/index.html</loc>
+    <lastmod>2025-02-11T11:51:13.312Z</lastmod>
   </url>
 </urlset>
