@@ -6,10 +6,8 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="author" content="Sisi Shao">
-<meta name="dcterms.date" content="2025-02-20">
 
-<title>🎬 Web Scraping for Movie Recommendations – My Quarto Blog</title>
+<title>Homework 3: Web Development – My Quarto Blog</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -166,28 +164,20 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#web-scraping-for-movie-recommendations" id="toc-web-scraping-for-movie-recommendations" class="nav-link active" data-scroll-target="#web-scraping-for-movie-recommendations">🎬 Web Scraping for Movie Recommendations</a>
+  <li><a href="#ucla-pic-16b-lec-1-winter-2025" id="toc-ucla-pic-16b-lec-1-winter-2025" class="nav-link active" data-scroll-target="#ucla-pic-16b-lec-1-winter-2025">UCLA PIC 16B Lec 1, Winter 2025</a>
   <ul class="collapse">
-  <li><a href="#introduction" id="toc-introduction" class="nav-link" data-scroll-target="#introduction">Introduction</a></li>
-  <li><a href="#setting-up-the-scraper" id="toc-setting-up-the-scraper" class="nav-link" data-scroll-target="#setting-up-the-scraper">1️⃣ Setting Up the Scraper</a>
+  <li><a href="#overview" id="toc-overview" class="nav-link" data-scroll-target="#overview">Overview</a></li>
+  </ul></li>
+  <li><a href="#setting-up-the-database" id="toc-setting-up-the-database" class="nav-link" data-scroll-target="#setting-up-the-database">Setting Up the Database</a></li>
+  <li><a href="#inserting-messages-into-the-database" id="toc-inserting-messages-into-the-database" class="nav-link" data-scroll-target="#inserting-messages-into-the-database">Inserting Messages into the Database</a></li>
+  <li><a href="#retrieving-random-messages" id="toc-retrieving-random-messages" class="nav-link" data-scroll-target="#retrieving-random-messages">Retrieving Random Messages</a></li>
+  <li><a href="#building-the-dash-web-app" id="toc-building-the-dash-web-app" class="nav-link" data-scroll-target="#building-the-dash-web-app">Building the Dash Web App</a></li>
+  <li><a href="#adding-callback-functions" id="toc-adding-callback-functions" class="nav-link" data-scroll-target="#adding-callback-functions">Adding Callback Functions</a>
   <ul class="collapse">
-  <li><a href="#step-1-install-set-up-scrapy" id="toc-step-1-install-set-up-scrapy" class="nav-link" data-scroll-target="#step-1-install-set-up-scrapy">🛠️ Step 1: Install &amp; Set Up Scrapy</a></li>
+  <li><a href="#submitting-messages" id="toc-submitting-messages" class="nav-link" data-scroll-target="#submitting-messages">Submitting Messages</a></li>
+  <li><a href="#viewing-messages" id="toc-viewing-messages" class="nav-link" data-scroll-target="#viewing-messages">Viewing Messages</a></li>
   </ul></li>
-  <li><a href="#implementing-the-scraper" id="toc-implementing-the-scraper" class="nav-link" data-scroll-target="#implementing-the-scraper">2️⃣ Implementing the Scraper</a></li>
-  <li><a href="#parsing-methods-explained" id="toc-parsing-methods-explained" class="nav-link" data-scroll-target="#parsing-methods-explained">📝 Parsing Methods Explained</a>
-  <ul class="collapse">
-  <li><a href="#parse" id="toc-parse" class="nav-link" data-scroll-target="#parse">1. <code>parse()</code></a></li>
-  <li><a href="#parse_full_credits" id="toc-parse_full_credits" class="nav-link" data-scroll-target="#parse_full_credits">2. <code>parse_full_credits()</code></a></li>
-  <li><a href="#parse_actor_page" id="toc-parse_actor_page" class="nav-link" data-scroll-target="#parse_actor_page">3. <code>parse_actor_page()</code></a></li>
-  </ul></li>
-  <li><a href="#running-the-scraper" id="toc-running-the-scraper" class="nav-link" data-scroll-target="#running-the-scraper">3️⃣ Running the Scraper</a></li>
-  <li><a href="#making-recommendations" id="toc-making-recommendations" class="nav-link" data-scroll-target="#making-recommendations">4️⃣ Making Recommendations</a>
-  <ul class="collapse">
-  <li><a href="#analyzing-shared-actors" id="toc-analyzing-shared-actors" class="nav-link" data-scroll-target="#analyzing-shared-actors">📊 Analyzing Shared Actors</a></li>
-  </ul></li>
-  <li><a href="#visualization" id="toc-visualization" class="nav-link" data-scroll-target="#visualization">📈 Visualization</a></li>
-  <li><a href="#summary" id="toc-summary" class="nav-link" data-scroll-target="#summary">📜 Summary</a></li>
-  </ul></li>
+  <li><a href="#conclusion" id="toc-conclusion" class="nav-link" data-scroll-target="#conclusion">Conclusion</a></li>
   </ul>
 </nav>
     </div>
@@ -196,31 +186,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">🎬 Web Scraping for Movie Recommendations</h1>
-  <div class="quarto-categories">
-    <div class="quarto-category">Web Scraping</div>
-    <div class="quarto-category">Python</div>
-    <div class="quarto-category">Scrapy</div>
-  </div>
-  </div>
+<h1 class="title">Homework 3: Web Development</h1>
+</div>
 
 
 
 <div class="quarto-title-meta">
 
-    <div>
-    <div class="quarto-title-meta-heading">Author</div>
-    <div class="quarto-title-meta-contents">
-             <p>Sisi Shao </p>
-          </div>
-  </div>
     
-    <div>
-    <div class="quarto-title-meta-heading">Published</div>
-    <div class="quarto-title-meta-contents">
-      <p class="date">February 20, 2025</p>
-    </div>
-  </div>
   
     
   </div>
@@ -230,154 +203,152 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<section id="web-scraping-for-movie-recommendations" class="level1">
-<h1>🎬 Web Scraping for Movie Recommendations</h1>
-<section id="introduction" class="level2">
-<h2 class="anchored" data-anchor-id="introduction">Introduction</h2>
-<p>Wouldn’t it be nice to find more shows similar to your favorite ones? Many modern platforms, such as Netflix and Spotify, use <strong>recommender systems</strong> to suggest content.</p>
-<p>In this post, we will use <strong>web scraping</strong> to create a simple recommendation system based on <strong>shared actors</strong> between movies and TV shows.</p>
-</section>
-<section id="setting-up-the-scraper" class="level2">
-<h2 class="anchored" data-anchor-id="setting-up-the-scraper">1️⃣ Setting Up the Scraper</h2>
-<p>We will scrape data from <a href="https://www.themoviedb.org/">The Movie Database (TMDB)</a> using the <code>scrapy</code> library.</p>
-<section id="step-1-install-set-up-scrapy" class="level3">
-<h3 class="anchored" data-anchor-id="step-1-install-set-up-scrapy">🛠️ Step 1: Install &amp; Set Up Scrapy</h3>
-<p>Run the following commands in your terminal:</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">conda</span> activate PIC16B-25W</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="ex">scrapy</span> startproject TMDB_scraper</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> TMDB_scraper</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>Modify the <code>settings.py</code> file to limit the number of pages scraped:</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">CLOSESPIDER_PAGECOUNT</span> = 20</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<section id="ucla-pic-16b-lec-1-winter-2025" class="level2">
+<h2 class="anchored" data-anchor-id="ucla-pic-16b-lec-1-winter-2025">UCLA PIC 16B Lec 1, Winter 2025</h2>
+<section id="overview" class="level3">
+<h3 class="anchored" data-anchor-id="overview">Overview</h3>
+<p>This notebook demonstrates the creation of a simple <strong>Message Bank Web App</strong> using Dash by Plotly. The app allows users to: 1. Submit messages to a database. 2. View random messages stored in the database. 3. Display messages dynamically using callbacks.</p>
+<p>We utilize <strong>SQLite</strong> for database management and <strong>Dash</strong> for the interactive interface.</p>
+<div id="93983b3f" class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> dash</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> dash <span class="im">import</span> dcc, html</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> dash.dependencies <span class="im">import</span> Input, Output</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> sqlite3</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> random</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
 </section>
 </section>
-<section id="implementing-the-scraper" class="level2">
-<h2 class="anchored" data-anchor-id="implementing-the-scraper">2️⃣ Implementing the Scraper</h2>
-<p>We will implement a <strong>three-step scraper</strong> to:</p>
-<ol type="1">
-<li><strong>Extract actor links</strong> from a movie’s cast page.</li>
-<li><strong>Visit each actor’s profile</strong> and extract their acting roles.</li>
-<li><strong>Filter out non-acting roles</strong> and store only relevant movies &amp; TV shows.</li>
-</ol>
-<p>📜 <code>tmdb_spider.py</code> (<strong>Scrapy Code</strong>)</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">import</span> scrapy</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="ex">class</span> TmdbSpider<span class="er">(</span><span class="ex">scrapy.Spider</span><span class="kw">)</span><span class="bu">:</span></span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    <span class="ex">name</span> = <span class="st">"tmdb_spider"</span></span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    <span class="ex">def</span> __init__<span class="er">(</span><span class="ex">self,</span> subdir=<span class="st">""</span>, <span class="pp">*</span>args, <span class="pp">**</span>kwargs<span class="kw">)</span><span class="bu">:</span></span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>        <span class="st">"""Initialize the spider with a specific movie subdirectory from TMDB."""</span></span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>        <span class="fu">super()</span><span class="ex">.__init__</span><span class="er">(</span><span class="ex">*args,</span> <span class="pp">**</span>kwargs<span class="kw">)</span></span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>        <span class="ex">self.start_urls</span> = <span class="pp">[</span><span class="ss">f</span><span class="st">"https://www.themoviedb.org/movie/{subdir}/"</span><span class="pp">]</span></span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>    <span class="ex">def</span> parse<span class="er">(</span><span class="ex">self,</span> response<span class="kw">)</span><span class="bu">:</span></span>
-<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>        <span class="st">"""Step 1: Navigate to the Full Cast &amp; Crew page of the movie."""</span></span>
-<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>        <span class="ex">cast_url</span> = response.url.rstrip<span class="er">(</span><span class="st">"/"</span><span class="kw">)</span> <span class="ex">+</span> <span class="st">"/cast"</span></span>
-<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>        <span class="ex">yield</span> scrapy.Request<span class="er">(</span><span class="va">url</span><span class="op">=</span>cast_url, <span class="va">callback</span><span class="op">=</span>self.parse_full_credits<span class="kw">)</span></span>
-<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>    <span class="ex">def</span> parse_full_credits<span class="er">(</span><span class="ex">self,</span> response<span class="kw">)</span><span class="bu">:</span></span>
-<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>        <span class="st">"""Step 2: Extract all actor profile links and visit each actor's page."""</span></span>
-<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>        <span class="ex">actors</span> = set<span class="er">(</span><span class="ex">response.css</span><span class="er">(</span><span class="st">"ol.people.credits:not(.crew) li a::attr(href)"</span><span class="kw">)</span><span class="fu">.getall()</span><span class="kw">)</span>  <span class="co"># Exclude crew members</span></span>
-<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> actor <span class="kw">in</span> actors:</span>
-<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>            <span class="co">#need callback=self.parse_actor_page to tell Scrapy to wait for the response before calling the function</span></span>
-<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>            <span class="ex">yield</span> response.follow<span class="er">(</span><span class="ex">actor,</span> callback=self.parse_actor_page<span class="kw">)</span></span>
-<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>    <span class="ex">def</span> parse_actor_page<span class="er">(</span><span class="ex">self,</span> response<span class="kw">)</span><span class="bu">:</span></span>
-<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>        <span class="st">"""Step 3: Extract the actor's name and their acting roles (only from the first Acting table)."""</span></span>
-<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a>        <span class="ex">actor_name</span> = response.css<span class="er">(</span><span class="st">"h2.title a::text, h1.title::text"</span><span class="kw">)</span><span class="fu">.get()</span></span>
-<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a>        <span class="ex">movies</span> = set<span class="er">(</span><span class="ex">response.xpath</span><span class="er">(</span></span>
-<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a>            <span class="st">"//h3[contains(translate(text(), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), 'acting')]"</span></span>
-<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a>            <span class="st">"/following-sibling::table[1]//td[contains(@class, 'role')]/a/bdi/text()"</span></span>
-<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a>        <span class="kw">)</span><span class="fu">.getall()</span><span class="kw">)</span></span>
-<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> movie <span class="kw">in</span> movies:</span>
-<span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a>            <span class="ex">yield</span> {<span class="st">"actor"</span>: actor_name.strip<span class="er">(</span><span class="kw">)</span> <span class="cf">if</span> <span class="ex">actor_name</span> else <span class="st">"Unknown"</span>, <span class="st">"movie_or_TV_name"</span>: movie.strip<span class="er">(</span><span class="kw">)</span><span class="er">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<section id="setting-up-the-database" class="level2">
+<h2 class="anchored" data-anchor-id="setting-up-the-database">Setting Up the Database</h2>
+<p>We use an SQLite database to store user messages. The following function initializes the database and creates a table if it does not exist.</p>
+<div id="3800372b" class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> get_message_db():</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">'''Initializes and connects to the message database.'''</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    <span class="kw">global</span> message_db</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    message_db <span class="op">=</span> sqlite3.<span class="ex">connect</span>(<span class="st">"messages_db.sqlite"</span>, check_same_thread<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    cursor <span class="op">=</span> message_db.cursor()</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>    cursor.execute(<span class="st">'''</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="st">        CREATE TABLE IF NOT EXISTS messages (</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="st">            id INTEGER PRIMARY KEY AUTOINCREMENT,</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="st">            handle TEXT,</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="st">            message TEXT</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="st">        )</span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="st">    '''</span>)</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>    message_db.commit()</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> message_db</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
 </section>
-<section id="parsing-methods-explained" class="level2">
-<h2 class="anchored" data-anchor-id="parsing-methods-explained">📝 Parsing Methods Explained</h2>
-<section id="parse" class="level3">
-<h3 class="anchored" data-anchor-id="parse">1. <code>parse()</code></h3>
-<p>The <code>parse()</code> method is responsible for extracting actor links from a movie’s cast page. It assumes that the response is a movie page and uses CSS selectors to locate all cast members. Once the actor links are found, it follows each link and passes the response to <code>parse_full_credits()</code>, ensuring that the scraper retrieves detailed information about each actor’s filmography.</p>
-<hr>
+<section id="inserting-messages-into-the-database" class="level2">
+<h2 class="anchored" data-anchor-id="inserting-messages-into-the-database">Inserting Messages into the Database</h2>
+<p>Users can submit messages, which are stored in the SQLite database using the <code>insert_message()</code> function.</p>
+<div id="71cc56c9" class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> insert_message(handle, message):</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">'''Inserts a user-submitted message into the database.'''</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    db <span class="op">=</span> get_message_db()</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    cursor <span class="op">=</span> db.cursor()</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    cursor.execute(<span class="st">"INSERT INTO messages (handle, message) VALUES (?, ?)"</span>, (handle, message))</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    db.commit()</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>    db.close()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
 </section>
-<section id="parse_full_credits" class="level3">
-<h3 class="anchored" data-anchor-id="parse_full_credits">2. <code>parse_full_credits()</code></h3>
-<p>The <code>parse_full_credits()</code> method extracts the full list of movies and TV shows that an actor has appeared in. It assumes that the response comes from an actor’s profile page and navigates through the filmography section using CSS selectors. Each extracted role is then passed to <code>parse_actor_page()</code>, allowing the scraper to process only relevant acting roles and filter out other credits such as directing or producing.</p>
-<hr>
+<section id="retrieving-random-messages" class="level2">
+<h2 class="anchored" data-anchor-id="retrieving-random-messages">Retrieving Random Messages</h2>
+<p>We can retrieve up to <strong>5 random messages</strong> from the database using the following function:</p>
+<div id="56a4c5c1" class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> random_messages(n<span class="op">=</span><span class="dv">5</span>):</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">'''Retrieves up to n random messages from the database.'''</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    db <span class="op">=</span> get_message_db()</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    cursor <span class="op">=</span> db.cursor()</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    cursor.execute(<span class="st">"SELECT handle, message FROM messages ORDER BY RANDOM() LIMIT ?"</span>, (n,))</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    messages <span class="op">=</span> cursor.fetchall()</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>    db.close()</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> messages</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
 </section>
-<section id="parse_actor_page" class="level3">
-<h3 class="anchored" data-anchor-id="parse_actor_page">3. <code>parse_actor_page()</code></h3>
-<p>The <code>parse_actor_page()</code> method processes the details of a movie or TV show that an actor has been involved in. It assumes that the response corresponds to a movie or TV show page and extracts the title along with the actor’s name. Additionally, it verifies whether the role is an acting role by checking the role description on the page. If the role qualifies, it yields a dictionary containing the actor’s name and the corresponding movie or TV show title, ensuring that only acting credits are stored in the final dataset.</p>
-</section>
-</section>
-<section id="running-the-scraper" class="level2">
-<h2 class="anchored" data-anchor-id="running-the-scraper">3️⃣ Running the Scraper</h2>
-<p>To run the scraper for a specific movie like “Harry Potter and the Philosopher’s Stone”, use:</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">scrapy</span> crawl tmdb_spider <span class="at">-o</span> results.csv <span class="at">-a</span> subdir=671-harry-potter-and-the-philosophe</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>This will generate a CSV file with two columns:</p>
-<ul>
-<li><code>actor</code>: Name of the actor</li>
-<li><code>movie_or_TV_name</code>: Movies or TV shows they have appeared in</li>
-</ul>
-</section>
-<section id="making-recommendations" class="level2">
-<h2 class="anchored" data-anchor-id="making-recommendations">4️⃣ Making Recommendations</h2>
-<p>Now that we have the data, we can process it to find <strong>movies and TV shows that share actors</strong> with our favorite movie.</p>
-<section id="analyzing-shared-actors" class="level3">
-<h3 class="anchored" data-anchor-id="analyzing-shared-actors">📊 Analyzing Shared Actors</h3>
-<p>We use <strong>Pandas</strong> to count and sort the movies with the most shared actors:</p>
-<div id="fa011570" class="cell" data-execution_count="1">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<section id="building-the-dash-web-app" class="level2">
+<h2 class="anchored" data-anchor-id="building-the-dash-web-app">Building the Dash Web App</h2>
+<p>The <strong>Dash app</strong> provides an interactive interface for users to submit messages and retrieve random messages. Below is the layout:</p>
+<div id="3294a70a" class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>app <span class="op">=</span> dash.Dash(<span class="va">__name__</span>)</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Load scraped data</span></span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> pd.read_csv(<span class="st">"results.csv"</span>)</span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Count occurrences of each movie/TV show</span></span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>recommendations <span class="op">=</span> df[<span class="st">'movie_or_TV_name'</span>].value_counts().reset_index()</span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>recommendations.columns <span class="op">=</span> [<span class="st">'Movie/TV Show'</span>, <span class="st">'Number of Shared Actors'</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Define external styles</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>external_styles <span class="op">=</span> {</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">'backgroundColor'</span>: <span class="st">'#f4f4f4'</span>,</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">'fontFamily'</span>: <span class="st">'Arial, sans-serif'</span>,</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">'textAlign'</span>: <span class="st">'center'</span>,</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>    <span class="st">'color'</span>: <span class="st">'#333'</span></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>button_style <span class="op">=</span> {</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>    <span class="st">'backgroundColor'</span>: <span class="st">'#007BFF'</span>,</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>    <span class="st">'color'</span>: <span class="st">'white'</span>,</span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>    <span class="st">'border'</span>: <span class="st">'none'</span>,</span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>    <span class="st">'padding'</span>: <span class="st">'10px 20px'</span>,</span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>    <span class="st">'borderRadius'</span>: <span class="st">'5px'</span>,</span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>    <span class="st">'cursor'</span>: <span class="st">'pointer'</span></span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>app.layout <span class="op">=</span> html.Div(style<span class="op">=</span>external_styles, children<span class="op">=</span>[</span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a>    html.H1(<span class="st">"Message Bank"</span>, style<span class="op">=</span>{<span class="st">'color'</span>: <span class="st">'#007BFF'</span>}),</span>
+<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a>    html.Label(<span class="st">"Enter your name:"</span>),</span>
+<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a>    dcc.Input(<span class="bu">id</span><span class="op">=</span><span class="st">'name-input'</span>, <span class="bu">type</span><span class="op">=</span><span class="st">'text'</span>, placeholder<span class="op">=</span><span class="st">'Your Name'</span>),</span>
+<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a>    html.Br(),</span>
+<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a>    html.Label(<span class="st">"Enter your message:"</span>),</span>
+<span id="cb5-26"><a href="#cb5-26" aria-hidden="true" tabindex="-1"></a>    dcc.Input(<span class="bu">id</span><span class="op">=</span><span class="st">'message-input'</span>, <span class="bu">type</span><span class="op">=</span><span class="st">'text'</span>, placeholder<span class="op">=</span><span class="st">'Your Message'</span>),</span>
+<span id="cb5-27"><a href="#cb5-27" aria-hidden="true" tabindex="-1"></a>    html.Button(<span class="st">'Submit'</span>, <span class="bu">id</span><span class="op">=</span><span class="st">'submit-button'</span>, n_clicks<span class="op">=</span><span class="dv">0</span>, style<span class="op">=</span>button_style),</span>
+<span id="cb5-28"><a href="#cb5-28" aria-hidden="true" tabindex="-1"></a>    html.Div(<span class="bu">id</span><span class="op">=</span><span class="st">'submit-output'</span>, style<span class="op">=</span>{<span class="st">'marginTop'</span>: <span class="st">'10px'</span>, <span class="st">'color'</span>: <span class="st">'#28a745'</span>}),</span>
+<span id="cb5-29"><a href="#cb5-29" aria-hidden="true" tabindex="-1"></a>    html.Hr(),</span>
+<span id="cb5-30"><a href="#cb5-30" aria-hidden="true" tabindex="-1"></a>    html.Button(<span class="st">'View Random Messages'</span>, <span class="bu">id</span><span class="op">=</span><span class="st">'view-button'</span>, n_clicks<span class="op">=</span><span class="dv">0</span>, style<span class="op">=</span>button_style),</span>
+<span id="cb5-31"><a href="#cb5-31" aria-hidden="true" tabindex="-1"></a>    html.Div(<span class="bu">id</span><span class="op">=</span><span class="st">'messages-output'</span>, style<span class="op">=</span>{<span class="st">'marginTop'</span>: <span class="st">'10px'</span>, <span class="st">'color'</span>: <span class="st">'#333'</span>})</span>
+<span id="cb5-32"><a href="#cb5-32" aria-hidden="true" tabindex="-1"></a>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="adding-callback-functions" class="level2">
+<h2 class="anchored" data-anchor-id="adding-callback-functions">Adding Callback Functions</h2>
+<section id="submitting-messages" class="level3">
+<h3 class="anchored" data-anchor-id="submitting-messages">Submitting Messages</h3>
+<p>The following callback function handles message submissions.</p>
+<div id="c6c3be26" class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="at">@app.callback</span>(</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    Output(<span class="st">'submit-output'</span>, <span class="st">'children'</span>),</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    Input(<span class="st">'submit-button'</span>, <span class="st">'n_clicks'</span>),</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>    [dash.State(<span class="st">'name-input'</span>, <span class="st">'value'</span>), dash.State(<span class="st">'message-input'</span>, <span class="st">'value'</span>)]</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> submit(n_clicks, name, message):</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>    <span class="co">'''Handles user message submission.'''</span></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> n_clicks <span class="op">&gt;</span> <span class="dv">0</span> <span class="kw">and</span> name <span class="kw">and</span> message:</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>        insert_message(name, message)</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="ss">f'Thank you for your submission, </span><span class="sc">{</span>name<span class="sc">}</span><span class="ss">!'</span></span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="st">""</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="viewing-messages" class="level3">
+<h3 class="anchored" data-anchor-id="viewing-messages">Viewing Messages</h3>
+<p>This callback function retrieves and displays a list of random messages.</p>
+<div id="b9a3543c" class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="at">@app.callback</span>(</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>    Output(<span class="st">'messages-output'</span>, <span class="st">'children'</span>),</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    Input(<span class="st">'view-button'</span>, <span class="st">'n_clicks'</span>)</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> view(n_clicks):</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>    <span class="co">'''Displays random messages from the database.'''</span></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> n_clicks <span class="op">&gt;</span> <span class="dv">0</span>:</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>        messages <span class="op">=</span> random_messages()</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> html.Ul([html.Li(<span class="ss">f'</span><span class="sc">{</span>handle<span class="sc">}</span><span class="ss">: </span><span class="sc">{</span>message<span class="sc">}</span><span class="ss">'</span>) <span class="cf">for</span> handle, message <span class="kw">in</span> messages])</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="st">""</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 </section>
-<section id="visualization" class="level2">
-<h2 class="anchored" data-anchor-id="visualization">📈 Visualization</h2>
-<p>To better understand the recommendations, we can create a bar chart:</p>
-<div id="c7331be3" class="cell" data-execution_count="2">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot top recommendations</span></span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">10</span>, <span class="dv">5</span>))</span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>plt.barh(recommendations[<span class="st">'Movie/TV Show'</span>][:<span class="dv">10</span>], recommendations[<span class="st">'Number of Shared Actors'</span>][:<span class="dv">10</span>])</span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">"Number of Shared Actors"</span>)</span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">"Movie/TV Show"</span>)</span>
-<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">"Top 10 Movies/TV Shows with Shared Actors"</span>)</span>
-<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>plt.gca().invert_yaxis()</span>
-<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="index_files/figure-html/cell-3-output-1.png" width="1127" height="449" class="figure-img"></p>
-</figure>
-</div>
-</div>
-</div>
-</section>
-<section id="summary" class="level2">
-<h2 class="anchored" data-anchor-id="summary">📜 Summary</h2>
-<ul>
-<li>We built a <strong>web scraper</strong> using Scrapy to find shared actors between movies.</li>
-<li>We extracted <strong>acting roles only</strong> from TMDB and stored them in a CSV file.</li>
-<li>We used <strong>Pandas</strong> to count and <strong>Matplotlib</strong> to visualize the most frequently shared actors.</li>
-<li>This approach provides a <strong>simple recommendation system</strong> based on shared cast members.</li>
-</ul>
+<section id="conclusion" class="level2">
+<h2 class="anchored" data-anchor-id="conclusion">Conclusion</h2>
+<p>This project demonstrates how to create an interactive web application using <strong>Dash</strong> and <strong>SQLite</strong>. We implemented:</p>
+<p>✔️ A message submission system.<br>
+✔️ Random message retrieval functionality.<br>
+✔️ Callbacks to handle user interaction.<br>
+✔️ Styling for an improved user experience.</p>
+<p>This provides a foundation for <strong>web development</strong> with Dash and database handling. 🚀</p>
 
 
-</section>
 </section>
 
 </main> <!-- /main -->
@@ -471,7 +442,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   }
     var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
     var mailtoRegex = new RegExp(/^mailto:/);
-      var filterRegex = new RegExp("https:\/\/SisiShao\.github\.io\/My-Quarto-Blog\/");
+      var filterRegex = new RegExp('/' + window.location.host + '/');
     var isInternal = (href) => {
         return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
     }
